@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="lassesjoblom.thirty.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayout">
+            <ImageView
+                android:id="@+id/dice_one"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:onClick="diceOnClickEvent" />
+            <ImageView
+                android:id="@+id/dice_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:onClick="diceOnClickEvent" />
+            <ImageView
+                android:id="@+id/dice_three"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:onClick="diceOnClickEvent" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/linearLayout"
+            android:layout_alignParentStart="true">
+            <ImageView
+                android:id="@+id/dice_four"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:onClick="diceOnClickEvent" />
+            <ImageView
+                android:id="@+id/dice_five"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:onClick="diceOnClickEvent" />
+            <ImageView
+                android:id="@+id/dice_six"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:onClick="diceOnClickEvent" />
+        </LinearLayout>
+        <Button
+            android:id="@+id/throwButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:text="@string/throw_button"
+            android:onClick="throwButtonEvent"
+            tools:layout_editor_absoluteX="276dp"
+            tools:layout_editor_absoluteY="443dp" />
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/throwButton"
+            android:layout_alignParentBottom="true">
+        </Spinner>
+
+    </RelativeLayout>
+
+
+</android.support.constraint.ConstraintLayout>

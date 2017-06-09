@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Thirty</string>
+    <string name="throw_button">Throw</string>
+    <string name="dropdown_text_low">Low</string>
+    <string name="dropdown_text_4">Four</string>
+    <string name="dropdown_text_5">Five</string>
+    <string name="dropdown_text_6">Six</string>
+    <string name="dropdown_text_7">Seven</string>
+    <string name="dropdown_text_8">Eight</string>
+    <string name="dropdown_text_9">Nine</string>
+    <string name="dropdown_text_10">Ten</string>
+    <string name="dropdown_text_11">Eleven</string>
+    <string name="dropdown_text_12">Twelve</string>
+
+</resources>
