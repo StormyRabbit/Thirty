@@ -7,6 +7,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     private ThrowThirtyModel ttm = new ThrowThirtyModel();
@@ -22,15 +24,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initiateDices();
         initiateDropdown();
-        startBoard();
+        updateBoard();
     }
-    private void startBoard(){
-        updateDiceView(1, 1, false);
-        updateDiceView(2, 1, false);
-        updateDiceView(3, 1, false);
-        updateDiceView(4, 1, false);
-        updateDiceView(5, 1, false);
-        updateDiceView(6, 1, false);
+    private void updateBoard(){
+        ArrayList<Dice> dices = ttm.getDices();
+        int i = 0;
+        for(Dice d : dices){
+            updateDiceView(i, d.getFaceValue(), d.isMarked());
+            i++;
+        }
     }
     private void initiateDices(){
         dices = new ImageView[]{
@@ -61,8 +63,9 @@ public class MainActivity extends AppCompatActivity {
         dropdown.setAdapter(ddAdapter);
     }
 
-    public void throwButtonEvent(){
-
+    public void throwButtonEvent(View v){
+        ttm.throwUnmarkedDices();
+        updateBoard();
     }
 
     public void diceOnClickEvent(View v){

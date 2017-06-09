@@ -10,6 +10,9 @@ public class Dice {
     private int faceValue;
     private boolean isMarked;
 
+    public Dice(){
+        roll();
+    }
     public boolean isMarked() {
         return isMarked;
     }

@@ -19,14 +19,29 @@ public class ThrowThirtyModel {
     public ThrowThirtyModel() {
         addDices();
     }
+
     private void addDices() {
         for(int i = 0; i != 6; i++){
             diceList.add(new Dice());
         }
     }
+
+    public ArrayList<Dice> getDices(){
+        return diceList;
+    }
+
+    public void throwUnmarkedDices(){
+        for(Dice d : diceList){
+            if(!d.isMarked()){
+                d.roll();
+            }
+        }
+    }
+
     public int getDiceValue(int idx){
         return diceList.get(idx).getFaceValue();
     }
+
     public void throwDices(){
 
     }
