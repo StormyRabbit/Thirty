@@ -11,5 +11,7 @@
     <string name="dropdown_text_10">Ten</string>
     <string name="dropdown_text_11">Eleven</string>
     <string name="dropdown_text_12">Twelve</string>
-
+    <string name="currentRoundLabel">Current round:</string>
+    <string name="numberOfRethrowsLabel">Number of rethrows left:</string>
+    <string name="currentScoreLabel">Current score:</string>
 </resources>

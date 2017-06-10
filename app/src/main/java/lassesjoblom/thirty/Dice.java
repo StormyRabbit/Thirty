@@ -9,10 +9,24 @@ import java.util.Random;
 public class Dice {
     private int faceValue;
     private boolean isMarked;
+    private int id;
 
-    public Dice(){
+    public Dice(int id){
+        this.id = id;
         roll();
+
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+
     public boolean isMarked() {
         return isMarked;
     }

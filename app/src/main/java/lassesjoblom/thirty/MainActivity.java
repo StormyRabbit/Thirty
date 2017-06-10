@@ -6,8 +6,11 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import static lassesjoblom.thirty.R.id.spinner;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,14 +21,32 @@ public class MainActivity extends AppCompatActivity {
     private Spinner dropdown;
     private ArrayAdapter<String> ddAdapter;
 
+    private TextView scoreView = null;
+    private TextView currentRoundView = null;
+    private TextView numberOfRethrowsView = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initiateDices();
         initiateDropdown();
+        initiateInfoRow();
+        updateInfoRow();
         updateBoard();
     }
+
+    private void initiateInfoRow() {
+        scoreView = (TextView)findViewById(R.id.currentScoreVariable);
+        currentRoundView = (TextView)findViewById(R.id.currentRoundVariable);
+        numberOfRethrowsView = (TextView)findViewById(R.id.numberOfRethrowsVariable);
+    }
+    private void updateInfoRow() {
+        scoreView.setText(String.valueOf(ttm.getScore()));
+        currentRoundView.setText(String.valueOf(ttm.getCurrentRound()));
+        numberOfRethrowsView.setText(String.valueOf(ttm.getRethrow()));
+    }
+
     private void updateBoard(){
         ArrayList<Dice> dices = ttm.getDices();
         int i = 0;
@@ -34,9 +55,10 @@ public class MainActivity extends AppCompatActivity {
             i++;
         }
     }
+
     private void initiateDices(){
         dices = new ImageView[]{
-                (ImageView)findViewById(R.id.dice_one),
+                (ImageView) findViewById(R.id.dice_one),
                 (ImageView)findViewById(R.id.dice_two),
                 (ImageView)findViewById(R.id.dice_three),
                 (ImageView)findViewById(R.id.dice_four),
@@ -44,8 +66,34 @@ public class MainActivity extends AppCompatActivity {
                 (ImageView)findViewById(R.id.dice_six)
         };
     }
+
+    public void diceOnClick(View v){
+        Dice d = null;
+        switch( v.getId()){
+            case R.id.dice_one:
+                d = ttm.setDiceMarker(0);
+                break;
+            case R.id.dice_two:
+                d = ttm.setDiceMarker(1);
+                break;
+            case R.id.dice_three:
+                d = ttm.setDiceMarker(2);
+                break;
+            case R.id.dice_four:
+                d = ttm.setDiceMarker(3);
+                break;
+            case R.id.dice_five:
+                d = ttm.setDiceMarker(4);
+                break;
+            case R.id.dice_six:
+                d = ttm.setDiceMarker(5);
+                break;
+        }
+        updateDiceView(d.getId(), d.getFaceValue(), d.isMarked());
+    }
+
     private void initiateDropdown(){
-        dropdown = (Spinner)findViewById(R.id.spinner);
+        dropdown = (Spinner)findViewById(spinner);
         ddItems = new String[] {
                 getString(R.string.dropdown_text_low),
                 getString(R.string.dropdown_text_4),
@@ -65,25 +113,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void throwButtonEvent(View v){
         ttm.throwUnmarkedDices();
+        //dropdown.getItemAtPosition(dropdown.getSelectedItemPosition()).toString();
+        //ddAdapter.remove((String)dropdown.getSelectedItem());
+        //dropdown.setAdapter(ddAdapter);
+        ttm.setScore(8);
+        ttm.updateRound();
+        updateInfoRow();
         updateBoard();
-    }
-
-    public void diceOnClickEvent(View v){
-       switch (v.getId()){
-           case R.id.dice_one:
-
-               break;
-           case R.id.dice_two:
-               break;
-           case R.id.dice_three:
-               break;
-           case R.id.dice_four:
-               break;
-           case R.id.dice_five:
-               break;
-           case R.id.dice_six:
-               break;
-       }
     }
 
     private void updateDiceView(int idx, int faceValue, boolean isMarked){
