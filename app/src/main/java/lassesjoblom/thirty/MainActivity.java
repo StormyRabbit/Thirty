@@ -29,6 +29,18 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if(savedInstanceState == null){
+            setupCleanState();
+        }else{
+            restoreSavedState();
+        }
+    }
+
+    private void restoreSavedState() {
+
+    }
+
+    private void setupCleanState() {
         initiateDices();
         initiateDropdown();
         initiateInfoRow();
@@ -38,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putParcelableArrayList("diceList",ttm.getDices());
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -46,23 +59,24 @@ public class MainActivity extends AppCompatActivity {
         currentRoundView = (TextView)findViewById(R.id.currentRoundVariable);
         numberOfRethrowsView = (TextView)findViewById(R.id.numberOfRethrowsVariable);
     }
+
     private void updateInfoRow() {
         scoreView.setText(String.valueOf(ttm.getScore()));
         currentRoundView.setText(String.valueOf(ttm.getCurrentRound()));
         numberOfRethrowsView.setText(String.valueOf(ttm.getRethrow()));
     }
 
-    private void updateBoard(){
+    private void updateBoard() {
         ArrayList<Dice> dices = ttm.getDices();
         int i = 0;
-        for(Dice d : dices){
+        for(Dice d : dices) {
             updateDiceView(i, d.getFaceValue(), d.isMarked());
             i++;
         }
     }
 
-    private void initiateDices(){
-        dices = new ImageView[]{
+    private void initiateDices() {
+        dices = new ImageView[] {
                 (ImageView) findViewById(R.id.dice_one),
                 (ImageView)findViewById(R.id.dice_two),
                 (ImageView)findViewById(R.id.dice_three),
@@ -72,9 +86,9 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    public void diceOnClick(View v){
+    public void diceOnClick(View v) {
         Dice d = null;
-        switch( v.getId()){
+        switch( v.getId() ) {
             case R.id.dice_one:
                 d = ttm.setDiceMarker(0);
                 break;
@@ -97,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         updateDiceView(d.getId(), d.getFaceValue(), d.isMarked());
     }
 
-    private void initiateDropdown(){
+    private void initiateDropdown() {
         dropdown = (Spinner)findViewById(spinner);
         ddItems = new String[] {
                 getString(R.string.dropdown_text_low),
@@ -116,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         dropdown.setAdapter(ddAdapter);
     }
 
-    public void throwButtonEvent(View v){
+    public void throwButtonEvent(View v) {
         ttm.throwUnmarkedDices();
         ttm.updateRound();
         popScoreRule();
@@ -124,18 +138,18 @@ public class MainActivity extends AppCompatActivity {
         updateBoard();
     }
 
-    private String popScoreRule(){
+    private String popScoreRule() {
         //dropdown.getItemAtPosition(dropdown.getSelectedItemPosition()).toString();
         //ddAdapter.remove((String)dropdown.getSelectedItem());
         //dropdown.setAdapter(ddAdapter);
         String scoreRule = "";
         return scoreRule;
     }
-    private void updateDiceView(int idx, int faceValue, boolean isMarked){
+    private void updateDiceView(int idx, int faceValue, boolean isMarked) {
         dices[idx].setImageResource(getDrawableID(faceValue, isMarked));
     }
 
-    private int getDrawableID(int faceValue, boolean isMarked){
+    private int getDrawableID(int faceValue, boolean isMarked) {
         int retValue;
         switch( faceValue ) {
             case 1:

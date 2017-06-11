@@ -24,6 +24,6 @@
     <string name="scoreRoundEight">R8 score:</string>
     <string name="scoreRoundNine">R9 score:</string>
     <string name="scoreRoundTen">R10 score:</string>
-    <string name="finalScore">Final score:</string>
+    <string name="finalScore">Total score:</string>
     <string name="playAgainButString">Play again</string>
 </resources>

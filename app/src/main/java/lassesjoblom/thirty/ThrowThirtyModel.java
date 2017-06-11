@@ -85,8 +85,6 @@ public class ThrowThirtyModel {
         }
     }
 
-
-
     private ArrayList<Dice> checkForThreeOfAKind(
             ArrayList<Dice> dices, ArrayList<Dice> retArr,int pointValue){
         Iterator threeOfAKindIterator = dices.iterator();
