@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView numberOfRethrowsView = null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initiateDices();
@@ -34,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
         initiateInfoRow();
         updateInfoRow();
         updateBoard();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     private void initiateInfoRow() {
@@ -113,15 +118,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void throwButtonEvent(View v){
         ttm.throwUnmarkedDices();
-        //dropdown.getItemAtPosition(dropdown.getSelectedItemPosition()).toString();
-        //ddAdapter.remove((String)dropdown.getSelectedItem());
-        //dropdown.setAdapter(ddAdapter);
-        ttm.setScore(8);
         ttm.updateRound();
+        popScoreRule();
         updateInfoRow();
         updateBoard();
     }
 
+    private String popScoreRule(){
+        //dropdown.getItemAtPosition(dropdown.getSelectedItemPosition()).toString();
+        //ddAdapter.remove((String)dropdown.getSelectedItem());
+        //dropdown.setAdapter(ddAdapter);
+        String scoreRule = "";
+        return scoreRule;
+    }
     private void updateDiceView(int idx, int faceValue, boolean isMarked){
         dices[idx].setImageResource(getDrawableID(faceValue, isMarked));
     }

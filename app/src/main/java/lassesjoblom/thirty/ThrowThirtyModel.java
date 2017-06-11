@@ -11,19 +11,26 @@ import java.util.Stack;
  */
 
 public class ThrowThirtyModel {
-    private int score = 0;
-    private int singleScore = 0;
-    private int pairScore = 0;
-    private int currentRound = 0;
-    private int rethrow = 0;
-    private ArrayList<Dice> diceList = new ArrayList<>(6);
+
+    private int score;
+    private int singleScore;
+    private int pairScore;
+
+    private int currentRound;
+    private int rethrow;
+
+    private ArrayList<Dice> diceList;
+
+    private ScoreCalculator sCalc;
 
     public int getScore() {
         return score;
     }
 
     public ThrowThirtyModel() {
+        diceList = new ArrayList<>(6);
         addDices();
+        sCalc = new ScoreCalculator(diceList);
     }
 
     public Dice setDiceMarker(int idx){
@@ -78,52 +85,7 @@ public class ThrowThirtyModel {
         }
     }
 
-    public void setScore(int scoreRule) {
-        switch( scoreRule ){
-            case 0:
-                calculateLowScore();
-                break;
-            case 4:
-                calculateScore(4);
-                break;
-            case 5:
-                calculateScore(5);
-                break;
-            case 6:
-                calculateScore(6);
-                break;
-            case 7:
-                calculateScore(7);
-                break;
-            case 8:
-                calculateScore(8);
-                break;
-            case 9:
-                calculateScore(9);
-                break;
-            case 10:
-                calculateScore(10);
-                break;
-            case 11:
-                calculateScore(11);
-                break;
-            case 12:
-                calculateScore(12);
-                break;
-        }
-    }
 
-    private void calculateScore(int pointValue){
-        score = 0;
-        singleScore = 0;
-        pairScore = 0;
-        ArrayList<Dice> tempDice = checkSingleDices(pointValue);
-        tempDice = recursiveStackCrap(tempDice, new ArrayList<Dice>(),pointValue);
-        Log.d("checkSingleDice:", String.valueOf(singleScore));
-        Log.d("checkPairDice:", String.valueOf(pairScore));
-        Log.d("totalScore:", String.valueOf(score));
-        //tempDice = checkForThreeOfAKind(tempDice, pointValue);
-    }
 
     private ArrayList<Dice> checkForThreeOfAKind(
             ArrayList<Dice> dices, ArrayList<Dice> retArr,int pointValue){
@@ -153,50 +115,5 @@ public class ThrowThirtyModel {
         }
         return compareSum == targetValue;
     }
-    private ArrayList<Dice> recursiveStackCrap(
-            ArrayList<Dice> dices, ArrayList<Dice> retArr, int pointValue) {
-        ArrayList<Dice> recursiveArr = new ArrayList<>();
-        Stack<Dice> diceStack = new Stack<>();
-        diceStack.addAll(dices);
-        Dice d = diceStack.pop();
-        while( !diceStack.empty() ){
-            Dice otherDice = diceStack.pop();
-            if( d.getFaceValue() + otherDice.getFaceValue() == pointValue ) {
-                pairScore += pointValue;
-                score += pointValue;
-            }else {
-                recursiveArr.add(otherDice);
-                retArr.add(otherDice);
-            }
-        }
-        if(!recursiveArr.isEmpty()){
-            recursiveStackCrap(recursiveArr, retArr, pointValue);
-        }
-        return retArr;
-    }
 
-    private ArrayList<Dice> checkSingleDices(int pointValue){
-        ArrayList<Dice> dices = new ArrayList<>(diceList);
-        if(pointValue <= 6){
-            Iterator iter = dices.iterator();
-            while(iter.hasNext()){
-                Dice d = (Dice)iter.next();
-                if(d.getFaceValue() == pointValue){
-                    singleScore += pointValue;
-                    iter.remove();
-                }
-            }
-        }
-        score += singleScore;
-
-        return dices;
-    }
-    private void calculateLowScore(){
-        for(Dice d : diceList){
-            if(d.getFaceValue() <= 3){
-                score += d.getFaceValue();
-            }
-            Log.d("calculateLowScore:", String.valueOf(score));
-        }
-    }
 }

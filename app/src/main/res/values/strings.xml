@@ -14,4 +14,16 @@
     <string name="currentRoundLabel">Current round:</string>
     <string name="numberOfRethrowsLabel">Number of rethrows left:</string>
     <string name="currentScoreLabel">Current score:</string>
+    <string name="scoreRoundOne">R1 score:</string>
+    <string name="scoreRoundTwo">R2 score:</string>
+    <string name="scoreRoundThree">R3 score:</string>
+    <string name="scoreRoundFour">R4 score:</string>
+    <string name="scoreRoundFive">R5 score:</string>
+    <string name="scoreRoundSix">R6 score:</string>
+    <string name="scoreRoundSeven">R7 score:</string>
+    <string name="scoreRoundEight">R8 score:</string>
+    <string name="scoreRoundNine">R9 score:</string>
+    <string name="scoreRoundTen">R10 score:</string>
+    <string name="finalScore">Final score:</string>
+    <string name="playAgainButString">Play again</string>
 </resources>

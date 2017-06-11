@@ -6,7 +6,7 @@ import java.util.Random;
  * Created by Lasse on 2017-06-08.
  */
 
-public class Dice {
+class Dice {
     private int faceValue;
     private boolean isMarked;
     private int id;
@@ -25,8 +25,6 @@ public class Dice {
         this.id = id;
     }
 
-
-
     public boolean isMarked() {
         return isMarked;
     }
@@ -40,6 +38,7 @@ public class Dice {
         Random rng = new Random();
         faceValue = rng.nextInt(6);
     }
+
     public int getFaceValue() {
         return faceValue;
     }
