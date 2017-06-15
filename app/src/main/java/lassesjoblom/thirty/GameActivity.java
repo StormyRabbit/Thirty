@@ -12,16 +12,15 @@ import java.util.ArrayList;
 
 import static lassesjoblom.thirty.R.id.spinner;
 
-public class MainActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity {
 
-    private ThrowThirtyModel ttm = new ThrowThirtyModel();
+    private GameLogic gl = new GameLogic();
     private ImageView[] dices = null;
 
     private ArrayList<String> ddItems;
     private Spinner dropdown;
     private ArrayAdapter<String> ddAdapter;
 
-    private TextView scoreView = null;
     private TextView currentRoundView = null;
     private TextView numberOfRethrowsView = null;
 
@@ -54,13 +53,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void restoreDiceList(Bundle savedInstanceState) {
         ArrayList<Dice> dices = savedInstanceState.getParcelableArrayList("diceList");
-        ttm.setDiceList(dices);
+        gl.setDiceList(dices);
     }
 
     private void restoreModelIntegers(Bundle savedInstanceState) {
-        ttm.setRethrow( savedInstanceState.getInt("currentRethrow") );
-        ttm.setCurrentRound( savedInstanceState.getInt("currentRound") );
-        ttm.setScore( savedInstanceState.getInt("currentScore") );
+        gl.setRethrow( savedInstanceState.getInt("currentRethrow") );
+        gl.setCurrentRound( savedInstanceState.getInt("currentRound") );
+        gl.setScore( savedInstanceState.getInt("currentScore") );
     }
     private void setupBaseState() {
         initiateDices();
@@ -75,28 +74,27 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putParcelableArrayList("diceList",ttm.getDices());
-        savedInstanceState.putStringArrayList("scoreRules", ddItems);
-        savedInstanceState.putInt("currentScore", ttm.getScore());
-        savedInstanceState.putInt("currentRound", ttm.getCurrentRound());
-        savedInstanceState.putInt("currentRethrow", ttm.getRethrow());
         super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putParcelableArrayList("diceList", gl.getDices());
+        savedInstanceState.putStringArrayList("scoreRules", ddItems);
+        savedInstanceState.putInt("currentScore", gl.getScore());
+        savedInstanceState.putInt("currentRound", gl.getCurrentRound());
+        savedInstanceState.putInt("currentRethrow", gl.getRethrow());
+
     }
 
     private void initiateInfoRow() {
-        scoreView = (TextView)findViewById(R.id.currentScoreVariable);
         currentRoundView = (TextView)findViewById(R.id.currentRoundVariable);
         numberOfRethrowsView = (TextView)findViewById(R.id.numberOfRethrowsVariable);
     }
 
     private void updateInfoRow() {
-        scoreView.setText(String.valueOf(ttm.getScore()));
-        currentRoundView.setText(String.valueOf(ttm.getCurrentRound()));
-        numberOfRethrowsView.setText(String.valueOf(ttm.getRethrow()));
+        currentRoundView.setText(String.valueOf(gl.getCurrentRound()));
+        numberOfRethrowsView.setText(String.valueOf(gl.getRethrow()));
     }
 
     private void updateBoard() {
-        ArrayList<Dice> dices = ttm.getDices();
+        ArrayList<Dice> dices = gl.getDices();
         int i = 0;
         for(Dice d : dices) {
             updateDiceView(i, d.getFaceValue(), d.isMarked());
@@ -119,22 +117,22 @@ public class MainActivity extends AppCompatActivity {
         Dice d = null;
         switch( v.getId() ) {
             case R.id.dice_one:
-                d = ttm.setDiceMarker(0);
+                d = gl.setDiceMarker(0);
                 break;
             case R.id.dice_two:
-                d = ttm.setDiceMarker(1);
+                d = gl.setDiceMarker(1);
                 break;
             case R.id.dice_three:
-                d = ttm.setDiceMarker(2);
+                d = gl.setDiceMarker(2);
                 break;
             case R.id.dice_four:
-                d = ttm.setDiceMarker(3);
+                d = gl.setDiceMarker(3);
                 break;
             case R.id.dice_five:
-                d = ttm.setDiceMarker(4);
+                d = gl.setDiceMarker(4);
                 break;
             case R.id.dice_six:
-                d = ttm.setDiceMarker(5);
+                d = gl.setDiceMarker(5);
                 break;
         }
         updateDiceView(d.getId(), d.getFaceValue(), d.isMarked());
@@ -162,8 +160,8 @@ public class MainActivity extends AppCompatActivity {
         ddItems.add(getString(R.string.dropdown_text_12));
     }
     public void throwButtonEvent(View v) {
-        ttm.playThrow();
-        if(ttm.getCurrentRound() == 0){
+        gl.playThrow();
+        if(gl.getCurrentRound() == 0){
             popScoreRule();
         }
         updateInfoRow();
@@ -172,14 +170,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String popScoreRule() {
-        removeScoreRuleFromDropDown();
-        String scoreRule = "";
-        return scoreRule;
+        Object ddObj = dropdown.getSelectedItem();
+        String SelectedScoreRule = (String)ddObj;
+        removeScoreRuleFromDropDown(SelectedScoreRule);
+        return SelectedScoreRule;
     }
 
-    private void removeScoreRuleFromDropDown(){
-        Object ddObj = dropdown.getSelectedItem();
-        ddAdapter.remove((String)ddObj);
+    private void removeScoreRuleFromDropDown(String SelectedScoreRule){
+        ddAdapter.remove(SelectedScoreRule);
         ddAdapter.notifyDataSetChanged();
     }
 

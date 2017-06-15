@@ -6,26 +6,24 @@ import java.util.ArrayList;
  * Created by Lasse on 2017-06-08.
  */
 
-public class ThrowThirtyModel {
-
-
-    public void setScore(int score) {
-        sCalc.setScore(score);
-    }
+public class GameLogic {
 
     private int currentRound;
     private int rethrow;
 
     private ArrayList<Dice> diceList;
 
+    private ArrayList<RoundScore> roundScoresList;
+
     private ScoreCalculator sCalc;
 
-    public int getScore() {
-        return sCalc.getScore();
+    public RoundScore getScore() {
+        return sCalc.getCurrentRoundScore();
     }
 
-    public ThrowThirtyModel() {
+    public GameLogic() {
         diceList = new ArrayList<>(6);
+        roundScoresList = new ArrayList<>(10);
         addDices();
         currentRound = 1;
         rethrow = 2;
@@ -36,9 +34,9 @@ public class ThrowThirtyModel {
         this.diceList = diceList;
     }
 
-    public Dice setDiceMarker(int idx){
+    public Dice setDiceMarker(int idx) {
         Dice d = diceList.get(idx);
-        if(d.isMarked()){
+        if(d.isMarked()) {
             d.setMarked(false);
         }else{
             d.setMarked(true);
@@ -68,16 +66,17 @@ public class ThrowThirtyModel {
         }
     }
 
-    public ArrayList<Dice> getDices(){
+    public ArrayList<Dice> getDices() {
         return diceList;
     }
 
-    public void playThrow(){
+    public void playThrow( ){
         throwUnmarkedDices();
-        sCalc.calculateScore(10);
+       // sCalc.calculateScore(10);
         updateRound();
     }
-    private void throwUnmarkedDices(){
+
+    private void throwUnmarkedDices() {
         for(Dice d : diceList){
             if(!d.isMarked()){
                 d.roll();
@@ -85,11 +84,12 @@ public class ThrowThirtyModel {
         }
     }
 
-    private void updateRound(){
+    private void updateRound() {
         if(rethrow != 0){
             rethrow--;
         }else{
             currentRound++;
+            rethrow = 2;
         }
     }
 
