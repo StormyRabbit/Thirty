@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     private ThrowThirtyModel ttm = new ThrowThirtyModel();
     private ImageView[] dices = null;
 
-    private String[] ddItems;
+    private ArrayList<String> ddItems;
     private Spinner dropdown;
     private ArrayAdapter<String> ddAdapter;
 
@@ -29,21 +29,46 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if(savedInstanceState == null){
-            setupCleanState();
+        setupBaseState();
+        if(savedInstanceState != null){
+            restoreSavedState(savedInstanceState);
         }else{
-            restoreSavedState();
+            addDropDownItems();
+            initiateDDAdapter();
         }
+        updateView();
     }
 
-    private void restoreSavedState() {
-
+    private void restoreSavedState(Bundle savedInstanceState) {
+        restoreDiceList(savedInstanceState);
+        restoreModelIntegers(savedInstanceState);
+        restoreDiceList(savedInstanceState);
+        restoreScoreRuleList(savedInstanceState);
+        updateInfoRow();
     }
 
-    private void setupCleanState() {
+    private void restoreScoreRuleList(Bundle savedInstanceState) {
+        ddItems = savedInstanceState.getStringArrayList("scoreRules");
+        initiateDDAdapter();
+    }
+
+    private void restoreDiceList(Bundle savedInstanceState) {
+        ArrayList<Dice> dices = savedInstanceState.getParcelableArrayList("diceList");
+        ttm.setDiceList(dices);
+    }
+
+    private void restoreModelIntegers(Bundle savedInstanceState) {
+        ttm.setRethrow( savedInstanceState.getInt("currentRethrow") );
+        ttm.setCurrentRound( savedInstanceState.getInt("currentRound") );
+        ttm.setScore( savedInstanceState.getInt("currentScore") );
+    }
+    private void setupBaseState() {
         initiateDices();
         initiateDropdown();
         initiateInfoRow();
+
+    }
+    private void updateView() {
         updateInfoRow();
         updateBoard();
     }
@@ -51,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putParcelableArrayList("diceList",ttm.getDices());
+        savedInstanceState.putStringArrayList("scoreRules", ddItems);
+        savedInstanceState.putInt("currentScore", ttm.getScore());
+        savedInstanceState.putInt("currentRound", ttm.getCurrentRound());
+        savedInstanceState.putInt("currentRethrow", ttm.getRethrow());
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -113,38 +142,47 @@ public class MainActivity extends AppCompatActivity {
 
     private void initiateDropdown() {
         dropdown = (Spinner)findViewById(spinner);
-        ddItems = new String[] {
-                getString(R.string.dropdown_text_low),
-                getString(R.string.dropdown_text_4),
-                getString(R.string.dropdown_text_5),
-                getString(R.string.dropdown_text_6),
-                getString(R.string.dropdown_text_7),
-                getString(R.string.dropdown_text_8),
-                getString(R.string.dropdown_text_9),
-                getString(R.string.dropdown_text_10),
-                getString(R.string.dropdown_text_11),
-                getString(R.string.dropdown_text_12)
-        };
+        ddItems = new ArrayList<>(10);
+    }
+    private void initiateDDAdapter() {
         ddAdapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_dropdown_item, ddItems);
         dropdown.setAdapter(ddAdapter);
     }
-
+    private void addDropDownItems(){
+        ddItems.add(getString(R.string.dropdown_text_low));
+        ddItems.add(getString(R.string.dropdown_text_4));
+        ddItems.add(getString(R.string.dropdown_text_5));
+        ddItems.add(getString(R.string.dropdown_text_6));
+        ddItems.add(getString(R.string.dropdown_text_7));
+        ddItems.add(getString(R.string.dropdown_text_8));
+        ddItems.add(getString(R.string.dropdown_text_9));
+        ddItems.add(getString(R.string.dropdown_text_10));
+        ddItems.add(getString(R.string.dropdown_text_11));
+        ddItems.add(getString(R.string.dropdown_text_12));
+    }
     public void throwButtonEvent(View v) {
-        ttm.throwUnmarkedDices();
-        ttm.updateRound();
-        popScoreRule();
+        ttm.playThrow();
+        if(ttm.getCurrentRound() == 0){
+            popScoreRule();
+        }
         updateInfoRow();
         updateBoard();
+
     }
 
     private String popScoreRule() {
-        //dropdown.getItemAtPosition(dropdown.getSelectedItemPosition()).toString();
-        //ddAdapter.remove((String)dropdown.getSelectedItem());
-        //dropdown.setAdapter(ddAdapter);
+        removeScoreRuleFromDropDown();
         String scoreRule = "";
         return scoreRule;
     }
+
+    private void removeScoreRuleFromDropDown(){
+        Object ddObj = dropdown.getSelectedItem();
+        ddAdapter.remove((String)ddObj);
+        ddAdapter.notifyDataSetChanged();
+    }
+
     private void updateDiceView(int idx, int faceValue, boolean isMarked) {
         dices[idx].setImageResource(getDrawableID(faceValue, isMarked));
     }

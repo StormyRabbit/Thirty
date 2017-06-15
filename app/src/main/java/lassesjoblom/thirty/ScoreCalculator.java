@@ -19,6 +19,7 @@ class ScoreCalculator {
     private int trippleScore;
     private int quadScore;
     private int pentaScore;
+    private int hexaScore;
 
     private ArrayList<Dice> diceList;
 
@@ -26,22 +27,89 @@ class ScoreCalculator {
         this.diceList = diceList;
     }
 
+    public int getScore(){
+        return score;
+    }
     public void setScore(int scoreRule) {
-        if(scoreRule == 0){
-            calculateLowScore();
-        }else{
-            calculateScore(scoreRule);
-        }
+        calculateScore(scoreRule);
     }
 
-    private void calculateScore(int pointValue){
+    public void calculateScore(int pointValue){
         score = 0;
         singleScore = 0;
         pairScore = 0;
         ArrayList<Dice> tempDice = checkSingleDices(pointValue);
-        tempDice = recursiveStackCrap(tempDice, new ArrayList<Dice>(),pointValue);
+        //tempDice = recursiveStackCrap(tempDice, new ArrayList<Dice>(),pointValue);
         //tempDice = checkForThreeOfAKind(tempDice, pointValue);
+        for(int i = 0; i < 6; i++){
+            testingMethod(tempDice, new ArrayList<Dice>(), pointValue, i);
+        }
         logScore();
+    }
+
+    private ArrayList<Dice> testingMethod(
+            ArrayList<Dice> dices, ArrayList<Dice> retArr, int pointValue, int numberOfDices) {
+
+        ArrayList<Dice> recursiveArr = new ArrayList<>();
+        Stack<Dice> diceStack = new Stack<>();
+        diceStack.addAll(dices);
+        ArrayList<Dice> diceSumArr = new ArrayList<>();
+
+        while( !diceStack.empty() ) {
+            Dice d = diceStack.pop();
+            diceSumArr.add(d);
+
+            if(diceSumArr.size() == numberOfDices) {
+                if(sumArr(diceSumArr) == pointValue) {
+                    updateScores(pointValue, numberOfDices);
+                    diceSumArr.clear(); // onödig, hjälper dock för min readability
+                }else {
+                    recursiveArr.add(d);
+                    retArr.add(d);
+                    for(int i = 1; i < diceSumArr.size(); i++) {
+                        // ta bort alla förrutom "orginal" tärningen
+                        diceSumArr.remove(i);
+                    }
+                }
+            }else {
+                diceSumArr.add(d);
+            }
+        }
+        if( !recursiveArr.isEmpty() ){
+            testingMethod(recursiveArr, retArr, pointValue, numberOfDices);
+        }
+        return retArr;
+    }
+
+    private void updateScores(int score, int numberOfDices){
+        switch( numberOfDices ){
+            case 1:
+                singleScore += score;
+                break;
+            case 2:
+                pairScore += score;
+                break;
+            case 3:
+                trippleScore += score;
+                break;
+            case 4:
+                quadScore += score;
+                break;
+            case 5:
+                pentaScore += score;
+                break;
+            case 6:
+                hexaScore += score;
+                break;
+        }
+        this.score += score;
+    }
+    private int sumArr(ArrayList<Dice> diceArr){
+        int retVal = 0;
+        for(Dice d : diceArr){
+            retVal += d.getFaceValue();
+        }
+        return retVal;
     }
 
     private ArrayList<Dice> recursiveStackCrap(
@@ -85,26 +153,6 @@ class ScoreCalculator {
         score += singleScore;
 
         return dices;
-    }
-
-    private void updateScore(int points, int numberOfDices){
-
-        switch(numberOfDices){
-            case 1:
-                break;
-            case 2:
-
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-            case 6:
-                break;
-        }
-
     }
 
     private void logScore(){

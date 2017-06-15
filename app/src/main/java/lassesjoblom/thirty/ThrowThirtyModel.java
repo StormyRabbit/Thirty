@@ -1,10 +1,6 @@
 package lassesjoblom.thirty;
 
-import android.util.Log;
-
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Stack;
 
 /**
  * Created by Lasse on 2017-06-08.
@@ -12,9 +8,10 @@ import java.util.Stack;
 
 public class ThrowThirtyModel {
 
-    private int score;
-    private int singleScore;
-    private int pairScore;
+
+    public void setScore(int score) {
+        sCalc.setScore(score);
+    }
 
     private int currentRound;
     private int rethrow;
@@ -24,13 +21,19 @@ public class ThrowThirtyModel {
     private ScoreCalculator sCalc;
 
     public int getScore() {
-        return score;
+        return sCalc.getScore();
     }
 
     public ThrowThirtyModel() {
         diceList = new ArrayList<>(6);
         addDices();
+        currentRound = 1;
+        rethrow = 2;
         sCalc = new ScoreCalculator(diceList);
+    }
+
+    public void setDiceList(ArrayList<Dice> diceList) {
+        this.diceList = diceList;
     }
 
     public Dice setDiceMarker(int idx){
@@ -69,7 +72,12 @@ public class ThrowThirtyModel {
         return diceList;
     }
 
-    public void throwUnmarkedDices(){
+    public void playThrow(){
+        throwUnmarkedDices();
+        sCalc.calculateScore(10);
+        updateRound();
+    }
+    private void throwUnmarkedDices(){
         for(Dice d : diceList){
             if(!d.isMarked()){
                 d.roll();
@@ -77,41 +85,12 @@ public class ThrowThirtyModel {
         }
     }
 
-    public void updateRound(){
-        if(rethrow != 2){
-            rethrow++;
+    private void updateRound(){
+        if(rethrow != 0){
+            rethrow--;
         }else{
             currentRound++;
         }
-    }
-
-    private ArrayList<Dice> checkForThreeOfAKind(
-            ArrayList<Dice> dices, ArrayList<Dice> retArr,int pointValue){
-        Iterator threeOfAKindIterator = dices.iterator();
-        ArrayList<Dice> recursiveArr = new ArrayList<>();
-        ArrayList<Dice> sumArr = new ArrayList<>();
-        Stack<Dice> diceStack = new Stack<>();
-        diceStack.addAll(dices);
-        Dice d = diceStack.pop();
-        int sum = 0;
-        while( !diceStack.empty() ){
-            if( (sumArr.size() == 3) && isSumEnough(sumArr, pointValue)){
-                score += pointValue;
-            }else{
-                Dice otherDice = diceStack.pop();
-                sumArr.add(otherDice);
-                recursiveArr.add(otherDice);
-                retArr.add(otherDice);
-            }
-        }
-        return retArr;
-    }
-    private boolean isSumEnough(ArrayList<Dice> dices, int targetValue){
-        int compareSum = 0;
-        for(Dice d : dices){
-            compareSum += d.getFaceValue();
-        }
-        return compareSum == targetValue;
     }
 
 }
