@@ -21,6 +21,13 @@ public class GameLogic {
         return sCalc.getCurrentRoundScore();
     }
 
+    public ArrayList<RoundScore> getRoundScoresList() {
+        return roundScoresList;
+    }
+
+    public void setRoundScoresList(ArrayList<RoundScore> roundScores) {
+        this.roundScoresList = roundScores;
+    }
     public GameLogic() {
         diceList = new ArrayList<>(6);
         roundScoresList = new ArrayList<>(10);
@@ -72,7 +79,7 @@ public class GameLogic {
 
     public void playThrow( ){
         throwUnmarkedDices();
-       // sCalc.calculateScore(10);
+        sCalc.calculateScore(5);
         updateRound();
     }
 

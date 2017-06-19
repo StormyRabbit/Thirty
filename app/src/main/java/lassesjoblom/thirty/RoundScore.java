@@ -107,6 +107,10 @@ public class RoundScore implements Parcelable {
         singleDiceScore += score;
     }
 
+    public void addToTwoDiceScore(int score) {
+        twoDiceScore += score;
+    }
+
     public void addToThreeDiceScore(int score) {
         threeDiceScore += score;
     }
@@ -148,13 +152,13 @@ public class RoundScore implements Parcelable {
     }
 
     public void logScore() {
-        Log.d("CurrentRound:", String.valueOf(round));
-        Log.d("SingleDice:", String.valueOf(singleDiceScore));
-        Log.d("PairDice:", String.valueOf(twoDiceScore));
-        Log.d("TrippleDice:", String.valueOf(threeDiceScore));
-        Log.d("FourDice:", String.valueOf(fourDiceScore));
-        Log.d("FiveDice:", String.valueOf(fiveDiceScore));
-        Log.d("SixDice:", String.valueOf(sixDiceScore));
-        Log.d("totalScore:", String.valueOf(totalScore));
+        Log.d("CurrentRound", String.valueOf(round));
+        Log.d("SingleDice", String.valueOf(singleDiceScore));
+        Log.d("PairDice", String.valueOf(twoDiceScore));
+        Log.d("TripleDice", String.valueOf(threeDiceScore));
+        Log.d("FourDice", String.valueOf(fourDiceScore));
+        Log.d("FiveDice", String.valueOf(fiveDiceScore));
+        Log.d("SixDice", String.valueOf(sixDiceScore));
+        Log.d("totalScore", String.valueOf(totalScore));
     }
 }

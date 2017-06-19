@@ -9,10 +9,15 @@ import java.util.Random;
  * Created by Lasse on 2017-06-08.
  */
 
-class Dice implements Parcelable {
+class Dice implements Parcelable, Comparable<Dice>{
     private int faceValue;
     private boolean isMarked;
     private int id;
+
+    @Override
+    public int compareTo(Dice otherDice) {
+        return this.faceValue - otherDice.getFaceValue();
+    }
 
     public Dice(int id){
         this.id = id;

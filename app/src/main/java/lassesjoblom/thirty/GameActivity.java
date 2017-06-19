@@ -59,7 +59,8 @@ public class GameActivity extends AppCompatActivity {
     private void restoreModelIntegers(Bundle savedInstanceState) {
         gl.setRethrow( savedInstanceState.getInt("currentRethrow") );
         gl.setCurrentRound( savedInstanceState.getInt("currentRound") );
-        gl.setScore( savedInstanceState.getInt("currentScore") );
+        ArrayList<RoundScore> roundScore = savedInstanceState.getParcelableArrayList("roundScoreList");
+        gl.setRoundScoresList( roundScore );
     }
     private void setupBaseState() {
         initiateDices();
@@ -77,7 +78,7 @@ public class GameActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putParcelableArrayList("diceList", gl.getDices());
         savedInstanceState.putStringArrayList("scoreRules", ddItems);
-        savedInstanceState.putInt("currentScore", gl.getScore());
+        savedInstanceState.putParcelableArrayList("roundScoreList", gl.getRoundScoresList());
         savedInstanceState.putInt("currentRound", gl.getCurrentRound());
         savedInstanceState.putInt("currentRethrow", gl.getRethrow());
 
