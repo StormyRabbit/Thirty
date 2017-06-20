@@ -3,12 +3,13 @@ package lassesjoblom.thirty;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Observable;
 
 /**
  * Created by Lasse on 2017-06-08.
  */
 
-public class GameLogic {
+public class GameLogic extends Observable {
 
     private int currentRound;
     private int rethrow;
@@ -87,23 +88,52 @@ public class GameLogic {
             roundScoresList.add(sCalc.calculateScore(11));
     }
 
+    public void changeRound(String scoreRule) {
+        int pointValue = 0;
+        switch ( scoreRule ) {
+            case "4":
+                break;
+            case "5":
+                break;
+            case "6":
+                break;
+            case "7":
+                break;
+            case "8":
+                break;
+            case "9":
+                break;
+            case "10":
+                break;
+            case "11":
+                break;
+            case "12":
+                break;
+
+        }
+        roundScoresList.add(sCalc.calculateScore(0));
+    }
+
     private void throwUnmarkedDices() {
         for(Dice d : diceList){
             if(!d.isMarked()){
                 d.roll();
             }
         }
+        notifyObservers();
     }
 
     private boolean updateRound() {
         if(rethrow != 0){
             rethrow--;
             return false;
+
         }else{
             currentRound++;
             rethrow = 2;
             return true;
         }
+
     }
 
 }

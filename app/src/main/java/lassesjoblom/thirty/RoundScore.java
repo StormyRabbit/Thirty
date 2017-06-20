@@ -17,6 +17,7 @@ public class RoundScore implements Parcelable {
     private int fourDiceScore;
     private int fiveDiceScore;
     private int sixDiceScore;
+    private int lowScore;
 
     @Override
     public boolean equals(Object o) {
@@ -101,6 +102,10 @@ public class RoundScore implements Parcelable {
 
     public void calculateTotalScore() {
         totalScore = singleDiceScore + twoDiceScore + threeDiceScore + fourDiceScore + fiveDiceScore + sixDiceScore;
+    }
+
+    public void addToLowScore(int score) {
+        this.lowScore += score;
     }
 
     public void addToSingleDiceScore(int score) {

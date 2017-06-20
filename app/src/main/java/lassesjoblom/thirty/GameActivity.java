@@ -10,12 +10,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 import static lassesjoblom.thirty.R.id.spinner;
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity implements Observer {
 
-    private GameLogic gl = new GameLogic();
+    private GameLogic gl;
     private ImageView[] dices = null;
 
     private ArrayList<String> ddItems;
@@ -26,9 +28,17 @@ public class GameActivity extends AppCompatActivity {
     private TextView numberOfRethrowsView = null;
 
     @Override
+    public void update(Observable obs, Object obj) {
+        updateInfoRow();
+        updateBoard();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        gl = new GameLogic();
+        gl.addObserver(this);
         setupBaseState();
         if(savedInstanceState != null){
             restoreSavedState(savedInstanceState);
@@ -36,7 +46,6 @@ public class GameActivity extends AppCompatActivity {
             addDropDownItems();
             initiateDDAdapter();
         }
-        updateView();
     }
 
     private void restoreSavedState(Bundle savedInstanceState) {
@@ -44,7 +53,6 @@ public class GameActivity extends AppCompatActivity {
         restoreModelIntegers(savedInstanceState);
         restoreDiceList(savedInstanceState);
         restoreScoreRuleList(savedInstanceState);
-        updateInfoRow();
     }
 
     private void restoreScoreRuleList(Bundle savedInstanceState) {
@@ -68,10 +76,6 @@ public class GameActivity extends AppCompatActivity {
         initiateDropdown();
         initiateInfoRow();
 
-    }
-    private void updateView() {
-        updateInfoRow();
-        updateBoard();
     }
 
     @Override
@@ -163,6 +167,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void nextRoundButtonEvent(View v) {
+
         popScoreRule();
         Toast.makeText(this, R.string.newRoundToast, Toast.LENGTH_SHORT).show();
     }
@@ -171,8 +176,6 @@ public class GameActivity extends AppCompatActivity {
         if(gl.getRethrow() > 0){
             gl.playThrow();
         }
-        updateInfoRow();
-        updateBoard();
     }
 
     private String popScoreRule() {

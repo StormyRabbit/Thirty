@@ -31,31 +31,46 @@ class ScoreCalculator {
         return currentRoundScore;
     }
 
-    public RoundScore calculateScore(int pointValue){
+    public RoundScore calculateScore(int pointValue) {
         currentRoundScore = new RoundScore();
         this.pointValue = pointValue;
-        Collections.sort(diceList);
-        ArrayList<Dice> tempDiceArr = calculateSingleDiceScore();
-        tempDiceArr = removeTooHighRolls(tempDiceArr);
+        if(pointValue == 0) {
+            calculateLowScore();
 
-        if(tempDiceArr.size() >= 2)
-            tempDiceArr = calculateTwoDiceScore(tempDiceArr);
+        }else{
 
-        if(tempDiceArr.size() >= 3)
-            tempDiceArr = calculateThreeDiceScore(tempDiceArr);
+            Collections.sort(diceList);
+            ArrayList<Dice> tempDiceArr = calculateSingleDiceScore();
+            tempDiceArr = removeTooHighRolls(tempDiceArr);
 
-        if(tempDiceArr.size() >= 4)
-            tempDiceArr = calculateFourDiceScore(tempDiceArr);
+            if(tempDiceArr.size() >= 2)
+                tempDiceArr = calculateTwoDiceScore(tempDiceArr);
 
-        if(tempDiceArr.size() >= 5)
-            tempDiceArr = calculateFiveDiceScore(tempDiceArr);
+            if(tempDiceArr.size() >= 3)
+                tempDiceArr = calculateThreeDiceScore(tempDiceArr);
 
-        if(tempDiceArr.size() == 6)
-            calculateSixDiceScore(tempDiceArr);
+            if(tempDiceArr.size() >= 4)
+                tempDiceArr = calculateFourDiceScore(tempDiceArr);
+
+            if(tempDiceArr.size() >= 5)
+                tempDiceArr = calculateFiveDiceScore(tempDiceArr);
+
+            if(tempDiceArr.size() == 6)
+                calculateSixDiceScore(tempDiceArr);
+
+        }
 
         currentRoundScore.calculateTotalScore();
         currentRoundScore.logScore();
         return currentRoundScore;
+    }
+
+    private void calculateLowScore() {
+        for(Dice d : diceList){
+            if(d.getFaceValue() <= 3) {
+                currentRoundScore.addToLowScore(pointValue);
+            }
+        }
     }
 
     private ArrayList<Dice> removeTooHighRolls(ArrayList<Dice> dices) {
