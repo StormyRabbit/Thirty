@@ -28,7 +28,11 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
 
     public void update(int currentRound, int rethrow, ArrayList<Dice> diceList) {
         if( currentRound == gl.getMaxAmountOfRounds() + 1 ) {
-            endGame(gl.getRoundScoresList());
+            if( gl.getRoundScoresList() == null) {
+                Toast.makeText(this, R.string.noRoundsPlayedToast, Toast.LENGTH_SHORT).show();
+            }else {
+                endGame(gl.getRoundScoresList());
+            }
         }else {
             updateInfoRow(currentRound, rethrow);
             updateBoard(diceList);
@@ -89,7 +93,7 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
 
     private void setUnRolledDices() {
         for(int i = 0; i < dices.length; i++) {
-            dices[i].setImageDrawable(null);
+            dices[i].setImageResource(R.drawable.unrolled);
         }
     }
 

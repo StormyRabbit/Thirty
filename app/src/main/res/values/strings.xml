@@ -28,4 +28,12 @@
     <string name="playAgainButString">Play again</string>
     <string name="newRoundToast">New round!</string>
     <string name="nextRoundButton">Next round</string>
+    <string name="noRoundsPlayedToast">No rounds has been played!</string>
+    <string name="scoreRuleText">Score rule:</string>
+    <string name="oneDiceScore">One dice score:</string>
+    <string name="twoDiceScore">Two dice score:</string>
+    <string name="threeDiceScore">Three dice score:</string>
+    <string name="fourDiceScore">Four dice score:</string>
+    <string name="fiveDiceScore">Five dice score:</string>
+    <string name="sixDiceScore">Six dice score:</string>
 </resources>

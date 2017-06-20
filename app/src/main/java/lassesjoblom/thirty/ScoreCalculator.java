@@ -1,8 +1,5 @@
 package lassesjoblom.thirty;
 
-import android.text.TextUtils;
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,7 +29,7 @@ class ScoreCalculator {
     }
 
     private void scoreRuleToPointValue(String scoreRule) {
-        int pointValue = 0;
+        pointValue = 0;
         switch (scoreRule) {
             case "4":
                 pointValue = 4;
@@ -65,6 +62,7 @@ class ScoreCalculator {
     }
     public RoundScore calculateScore(String scoreRule) {
         currentRoundScore = new RoundScore();
+        currentRoundScore.setScoreRule(scoreRule);
         scoreRuleToPointValue(scoreRule);
         if(pointValue == 0) {
             calculateLowScore();

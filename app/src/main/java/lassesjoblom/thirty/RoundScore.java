@@ -61,6 +61,7 @@ public class RoundScore implements Parcelable {
         this.fourDiceScore = in.readInt();
         this.fiveDiceScore = in.readInt();
         this.sixDiceScore = in.readInt();
+        this.scoreRule = in.readString();
 
     }
     public void writeToParcel(Parcel out, int flags) {
@@ -72,6 +73,7 @@ public class RoundScore implements Parcelable {
         out.writeInt(fourDiceScore);
         out.writeInt(fiveDiceScore);
         out.writeInt(sixDiceScore);
+        out.writeString(scoreRule);
 
     }
 

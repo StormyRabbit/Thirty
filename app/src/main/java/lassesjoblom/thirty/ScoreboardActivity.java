@@ -6,29 +6,56 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class ScoreboardActivity extends AppCompatActivity {
 
 
     private TextView[] scoreBoard;
     private Button playAgainBut;
-
-    public ScoreboardActivity() {
-    }
+    private ArrayList<RoundScore> roundScoresList;
+    public ScoreboardActivity() {}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scoreboard);
+        roundScoresList = getIntent().getParcelableArrayListExtra("scoreList");
         initiateScoreBoard();
-        updateScoreBoard(savedInstanceState.getIntArray("scores"));
+        updateScoreBoard();
     }
 
-    private void updateScoreBoard(int[] scores) {
-        for(int i = 0; i < scoreBoard.length; i++){
-            String text = getScoreBoardString(i);
-            scoreBoard[i].setText(text + " " + scores[i]);
+    private void updateScoreBoard() {
+        int i = 0;
+        for(RoundScore rs : roundScoresList){
+            scoreBoard[i].setText(buildScoreBoardString(i, rs));
+            i++;
         }
     }
+
+    private String buildScoreBoardString(int idx, RoundScore rs ) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getScoreBoardString(idx) + " " + String.valueOf(rs.getTotalScore()));
+        sb.append( System.getProperty ("line.separator") );
+        sb.append( getText(R.string.scoreRuleText) + " " + rs.getScoreRule());
+        sb.append( System.getProperty ("line.separator") );
+        if(rs.getScoreRule() != getText(R.string.dropdown_text_low)) {
+            sb.append( getText(R.string.oneDiceScore) + " " + String.valueOf(rs.getSingleDiceScore()));
+            sb.append( System.getProperty ("line.separator") );
+            sb.append( getText(R.string.twoDiceScore) + " " + String.valueOf(rs.getTwoDiceScore()));
+            sb.append( System.getProperty ("line.separator") );
+            sb.append( getText(R.string.threeDiceScore) + " " + String.valueOf(rs.getThreeDiceScore()));
+            sb.append( System.getProperty ("line.separator") );
+            sb.append( getText(R.string.fourDiceScore) + " " + String.valueOf(rs.getFourDiceScore()));
+            sb.append( System.getProperty ("line.separator") );
+            sb.append( getText(R.string.fiveDiceScore) + " " + String.valueOf(rs.getFiveDiceScore()));
+            sb.append( System.getProperty ("line.separator") );
+            sb.append( getText(R.string.sixDiceScore) + " " + String.valueOf(rs.getSixDiceScore()));
+            sb.append( System.getProperty ("line.separator") );
+        }
+        return sb.toString();
+    }
+
     private String getScoreBoardString(int idx){
         String retString = "";
         switch( idx ) {
@@ -68,6 +95,7 @@ public class ScoreboardActivity extends AppCompatActivity {
         }
         return retString;
     }
+
     private void initiateScoreBoard() {
         scoreBoard = new TextView[]{
                 (TextView)findViewById(R.id.r1ScoreLabel),
@@ -79,12 +107,7 @@ public class ScoreboardActivity extends AppCompatActivity {
                 (TextView)findViewById(R.id.r7ScoreLabel),
                 (TextView)findViewById(R.id.r8ScoreLabel),
                 (TextView)findViewById(R.id.r9ScoreLabel),
-                (TextView)findViewById(R.id.r10ScoreLabel),
-                (TextView)findViewById(R.id.finalScoreLabel)
+                (TextView)findViewById(R.id.r10ScoreLabel)
         };
-    }
-
-    public void playAgainButEvent(View v){
-
     }
 }
