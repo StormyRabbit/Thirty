@@ -1,5 +1,7 @@
 package lassesjoblom.thirty;
 
+import android.widget.Toast;
+
 import java.util.ArrayList;
 
 /**
@@ -31,10 +33,10 @@ public class GameLogic {
     public GameLogic() {
         diceList = new ArrayList<>(6);
         roundScoresList = new ArrayList<>(10);
+        sCalc = new ScoreCalculator();
         addDices();
         currentRound = 1;
         rethrow = 2;
-        sCalc = new ScoreCalculator(diceList);
     }
 
     public void setDiceList(ArrayList<Dice> diceList) {
@@ -45,7 +47,7 @@ public class GameLogic {
         Dice d = diceList.get(idx);
         if(d.isMarked()) {
             d.setMarked(false);
-        }else{
+        }else {
             d.setMarked(true);
         }
         return d;
@@ -69,7 +71,9 @@ public class GameLogic {
 
     private void addDices() {
         for(int i = 0; i != 6; i++){
-            diceList.add(new Dice(i));
+            Dice d = new Dice(i);
+            diceList.add(d);
+            sCalc.addDice(d);
         }
     }
 
@@ -79,8 +83,8 @@ public class GameLogic {
 
     public void playThrow( ){
         throwUnmarkedDices();
-        sCalc.calculateScore(5);
-        updateRound();
+        if(updateRound())
+            roundScoresList.add(sCalc.calculateScore(11));
     }
 
     private void throwUnmarkedDices() {
@@ -91,12 +95,14 @@ public class GameLogic {
         }
     }
 
-    private void updateRound() {
+    private boolean updateRound() {
         if(rethrow != 0){
             rethrow--;
+            return false;
         }else{
             currentRound++;
             rethrow = 2;
+            return true;
         }
     }
 

@@ -35,6 +35,15 @@ class Dice implements Parcelable, Comparable<Dice>{
         }
     }
 
+    @Override
+    public String toString() {
+        return "Dice{" +
+                "faceValue=" + faceValue +
+                ", isMarked=" + isMarked +
+                ", id=" + id +
+                '}';
+    }
+
     public int getId() {
         return id;
     }
@@ -54,7 +63,7 @@ class Dice implements Parcelable, Comparable<Dice>{
 
     public void roll() {
         Random rng = new Random();
-        faceValue = rng.nextInt(6);
+        faceValue = rng.nextInt(6) + 1;
     }
 
     public int getFaceValue() {

@@ -12,7 +12,7 @@
     <string name="dropdown_text_11">Eleven</string>
     <string name="dropdown_text_12">Twelve</string>
     <string name="currentRoundLabel">Current round:</string>
-    <string name="numberOfRethrowsLabel">Number of rethrows left:</string>
+    <string name="numberOfRethrowsLabel">Throws left:</string>
     <string name="currentScoreLabel">Current score:</string>
     <string name="scoreRoundOne">R1 score:</string>
     <string name="scoreRoundTwo">R2 score:</string>
@@ -26,4 +26,6 @@
     <string name="scoreRoundTen">R10 score:</string>
     <string name="finalScore">Total score:</string>
     <string name="playAgainButString">Play again</string>
+    <string name="newRoundToast">New round!</string>
+    <string name="nextRoundButton">Next round</string>
 </resources>

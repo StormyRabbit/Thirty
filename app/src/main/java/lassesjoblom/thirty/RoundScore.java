@@ -99,8 +99,8 @@ public class RoundScore implements Parcelable {
         return totalScore;
     }
 
-    public void addToTotalScore(int score) {
-        totalScore += score;
+    public void calculateTotalScore() {
+        totalScore = singleDiceScore + twoDiceScore + threeDiceScore + fourDiceScore + fiveDiceScore + sixDiceScore;
     }
 
     public void addToSingleDiceScore(int score) {

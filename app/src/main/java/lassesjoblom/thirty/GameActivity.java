@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -160,14 +161,18 @@ public class GameActivity extends AppCompatActivity {
         ddItems.add(getString(R.string.dropdown_text_11));
         ddItems.add(getString(R.string.dropdown_text_12));
     }
+
+    public void nextRoundButtonEvent(View v) {
+        popScoreRule();
+        Toast.makeText(this, R.string.newRoundToast, Toast.LENGTH_SHORT).show();
+    }
+
     public void throwButtonEvent(View v) {
-        gl.playThrow();
-        if(gl.getCurrentRound() == 0){
-            popScoreRule();
+        if(gl.getRethrow() > 0){
+            gl.playThrow();
         }
         updateInfoRow();
         updateBoard();
-
     }
 
     private String popScoreRule() {
