@@ -15,7 +15,7 @@ import java.util.Observer;
 
 import static lassesjoblom.thirty.R.id.spinner;
 
-public class GameActivity extends AppCompatActivity implements Observer {
+public class GameActivity extends AppCompatActivity implements lassesjoblom.thirty.Observer {
 
     private GameLogic gl;
     private ImageView[] dices = null;
@@ -27,10 +27,9 @@ public class GameActivity extends AppCompatActivity implements Observer {
     private TextView currentRoundView = null;
     private TextView numberOfRethrowsView = null;
 
-    @Override
-    public void update(Observable obs, Object obj) {
-        updateInfoRow();
-        updateBoard();
+    public void update(int currentRound, int rethrow, ArrayList<Dice> diceList) {
+        updateInfoRow(currentRound, rethrow);
+        updateBoard(diceList);
     }
 
     @Override
@@ -75,7 +74,13 @@ public class GameActivity extends AppCompatActivity implements Observer {
         initiateDices();
         initiateDropdown();
         initiateInfoRow();
+        setUnRolledDices();
+    }
 
+    private void setUnRolledDices() {
+        for(int i = 0; i < dices.length; i++) {
+            dices[i].setImageResource(R.drawable.unrolled);
+        }
     }
 
     @Override
@@ -94,17 +99,18 @@ public class GameActivity extends AppCompatActivity implements Observer {
         numberOfRethrowsView = (TextView)findViewById(R.id.numberOfRethrowsVariable);
     }
 
-    private void updateInfoRow() {
-        currentRoundView.setText(String.valueOf(gl.getCurrentRound()));
-        numberOfRethrowsView.setText(String.valueOf(gl.getRethrow()));
+    private void updateInfoRow(int currentRound, int rethrow) {
+        currentRoundView.setText(String.valueOf(currentRound));
+        numberOfRethrowsView.setText(String.valueOf(rethrow));
     }
 
-    private void updateBoard() {
-        ArrayList<Dice> dices = gl.getDices();
+    private void updateBoard(ArrayList<Dice> dices) {
+        if(!gl.isDicesRolled())
+            return;
         int i = 0;
         for(Dice d : dices) {
-            updateDiceView(i, d.getFaceValue(), d.isMarked());
-            i++;
+                updateDiceView(i, d.getFaceValue(), d.isMarked());
+                i++;
         }
     }
 
@@ -120,6 +126,8 @@ public class GameActivity extends AppCompatActivity implements Observer {
     }
 
     public void diceOnClick(View v) {
+        if(!gl.isDicesRolled())
+            return;
         Dice d = null;
         switch( v.getId() ) {
             case R.id.dice_one:
@@ -167,12 +175,14 @@ public class GameActivity extends AppCompatActivity implements Observer {
     }
 
     public void nextRoundButtonEvent(View v) {
-
-        popScoreRule();
+        String s = popScoreRule();
+        gl.endRound(s);
+        gl.setDicesRolled(false);
         Toast.makeText(this, R.string.newRoundToast, Toast.LENGTH_SHORT).show();
     }
 
     public void throwButtonEvent(View v) {
+        gl.setDicesRolled(true);
         if(gl.getRethrow() > 0){
             gl.playThrow();
         }

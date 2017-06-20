@@ -9,7 +9,7 @@ import java.util.Observable;
  * Created by Lasse on 2017-06-08.
  */
 
-public class GameLogic extends Observable {
+public class GameLogic implements lassesjoblom.thirty.Observable {
 
     private int currentRound;
     private int rethrow;
@@ -17,6 +17,24 @@ public class GameLogic extends Observable {
     private ArrayList<Dice> diceList;
 
     private ArrayList<RoundScore> roundScoresList;
+    private Observer o;
+    private boolean dicesRolled;
+
+    public void addObserver(Observer o){
+        this.o = o;
+    }
+
+    public void notifyObserver(){
+        o.update(currentRound, rethrow, diceList);
+    }
+
+    public boolean isDicesRolled() {
+        return dicesRolled;
+    }
+
+    public void setDicesRolled(boolean dicesRolled) {
+        this.dicesRolled = dicesRolled;
+    }
 
     private ScoreCalculator sCalc;
 
@@ -83,57 +101,63 @@ public class GameLogic extends Observable {
     }
 
     public void playThrow( ){
-        throwUnmarkedDices();
-        if(updateRound())
-            roundScoresList.add(sCalc.calculateScore(11));
+        if(rethrow != 0) {
+            rethrow--;
+            throwUnmarkedDices();
+            notifyObserver();
+        }
     }
 
-    public void changeRound(String scoreRule) {
+    public void endRound(String scoreRule) {
+        getRoundScore(scoreRule);
+        currentRound++;
+        rethrow = 2;
+        notifyObserver();
+    }
+    private void getRoundScore(String scoreRule) {
         int pointValue = 0;
         switch ( scoreRule ) {
             case "4":
+                pointValue = 4;
                 break;
             case "5":
+                pointValue = 5;
                 break;
             case "6":
+                pointValue = 6;
                 break;
             case "7":
+                pointValue = 7;
                 break;
             case "8":
+                pointValue = 8;
                 break;
             case "9":
+                pointValue = 9;
                 break;
             case "10":
+                pointValue = 10;
                 break;
             case "11":
+                pointValue = 11;
                 break;
             case "12":
+                pointValue = 12;
                 break;
 
         }
-        roundScoresList.add(sCalc.calculateScore(0));
+        roundScoresList.add(sCalc.calculateScore(pointValue));
     }
 
-    private void throwUnmarkedDices() {
+    private boolean throwUnmarkedDices() {
+        boolean diceThrown = false;
         for(Dice d : diceList){
             if(!d.isMarked()){
                 d.roll();
+                diceThrown = true;
             }
         }
-        notifyObservers();
-    }
-
-    private boolean updateRound() {
-        if(rethrow != 0){
-            rethrow--;
-            return false;
-
-        }else{
-            currentRound++;
-            rethrow = 2;
-            return true;
-        }
-
+        return diceThrown;
     }
 
 }
