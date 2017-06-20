@@ -31,9 +31,41 @@ class ScoreCalculator {
         return currentRoundScore;
     }
 
-    public RoundScore calculateScore(int pointValue) {
+    private void scoreRuleToPointValue(String scoreRule) {
+        int pointValue = 0;
+        switch (scoreRule) {
+            case "4":
+                pointValue = 4;
+                break;
+            case "5":
+                pointValue = 5;
+                break;
+            case "6":
+                pointValue = 6;
+                break;
+            case "7":
+                pointValue = 7;
+                break;
+            case "8":
+                pointValue = 8;
+                break;
+            case "9":
+                pointValue = 9;
+                break;
+            case "10":
+                pointValue = 10;
+                break;
+            case "11":
+                pointValue = 11;
+                break;
+            case "12":
+                pointValue = 12;
+                break;
+        }
+    }
+    public RoundScore calculateScore(String scoreRule) {
         currentRoundScore = new RoundScore();
-        this.pointValue = pointValue;
+        scoreRuleToPointValue(scoreRule);
         if(pointValue == 0) {
             calculateLowScore();
 

@@ -9,6 +9,7 @@ import android.util.Log;
  */
 
 public class RoundScore implements Parcelable {
+    private String scoreRule;
     private int round;
     private int totalScore;
     private int singleDiceScore;
@@ -154,6 +155,15 @@ public class RoundScore implements Parcelable {
 
     public int getSixDiceScore() {
         return sixDiceScore;
+    }
+
+
+    public String getScoreRule() {
+        return scoreRule;
+    }
+
+    public void setScoreRule(String scoreRule) {
+        this.scoreRule = scoreRule;
     }
 
     public void logScore() {

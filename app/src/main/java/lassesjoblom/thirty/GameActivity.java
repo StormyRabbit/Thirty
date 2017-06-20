@@ -1,5 +1,6 @@
 package lassesjoblom.thirty;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,8 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 
 import static lassesjoblom.thirty.R.id.spinner;
 
@@ -28,8 +27,19 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
     private TextView numberOfRethrowsView = null;
 
     public void update(int currentRound, int rethrow, ArrayList<Dice> diceList) {
-        updateInfoRow(currentRound, rethrow);
-        updateBoard(diceList);
+        if( currentRound == gl.getMaxAmountOfRounds() + 1 ) {
+            endGame(gl.getRoundScoresList());
+        }else {
+            updateInfoRow(currentRound, rethrow);
+            updateBoard(diceList);
+        }
+
+    }
+
+    private void endGame(ArrayList<RoundScore> score) {
+        Intent endGameIntent = new Intent(GameActivity.this, ScoreboardActivity.class);
+        endGameIntent.putParcelableArrayListExtra("scoreList", score);
+        startActivity(endGameIntent);
     }
 
     @Override
@@ -65,7 +75,7 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
     }
 
     private void restoreModelIntegers(Bundle savedInstanceState) {
-        gl.setRethrow( savedInstanceState.getInt("currentRethrow") );
+        gl.setDiceThrows( savedInstanceState.getInt("currentRethrow") );
         gl.setCurrentRound( savedInstanceState.getInt("currentRound") );
         ArrayList<RoundScore> roundScore = savedInstanceState.getParcelableArrayList("roundScoreList");
         gl.setRoundScoresList( roundScore );
@@ -79,7 +89,7 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
 
     private void setUnRolledDices() {
         for(int i = 0; i < dices.length; i++) {
-            dices[i].setImageResource(R.drawable.unrolled);
+            dices[i].setImageDrawable(null);
         }
     }
 
@@ -90,7 +100,7 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
         savedInstanceState.putStringArrayList("scoreRules", ddItems);
         savedInstanceState.putParcelableArrayList("roundScoreList", gl.getRoundScoresList());
         savedInstanceState.putInt("currentRound", gl.getCurrentRound());
-        savedInstanceState.putInt("currentRethrow", gl.getRethrow());
+        savedInstanceState.putInt("currentRethrow", gl.getDiceThrows());
 
     }
 
@@ -109,8 +119,8 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
             return;
         int i = 0;
         for(Dice d : dices) {
-                updateDiceView(i, d.getFaceValue(), d.isMarked());
-                i++;
+            updateDiceView(i, d.getFaceValue(), d.isMarked());
+            i++;
         }
     }
 
@@ -177,13 +187,15 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
     public void nextRoundButtonEvent(View v) {
         String s = popScoreRule();
         gl.endRound(s);
+        gl.unmarkDices();
         gl.setDicesRolled(false);
+        setUnRolledDices();
         Toast.makeText(this, R.string.newRoundToast, Toast.LENGTH_SHORT).show();
     }
 
     public void throwButtonEvent(View v) {
         gl.setDicesRolled(true);
-        if(gl.getRethrow() > 0){
+        if(gl.getDiceThrows() > 0){
             gl.playThrow();
         }
     }

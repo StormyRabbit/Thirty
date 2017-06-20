@@ -1,9 +1,6 @@
 package lassesjoblom.thirty;
 
-import android.widget.Toast;
-
 import java.util.ArrayList;
-import java.util.Observable;
 
 /**
  * Created by Lasse on 2017-06-08.
@@ -12,20 +9,27 @@ import java.util.Observable;
 public class GameLogic implements lassesjoblom.thirty.Observable {
 
     private int currentRound;
-    private int rethrow;
+    private int diceThrows;
+    private static final int MAX_NUMBER_OF_THROWS = 3;
+    private static final int TOTAL_NUMBER_OF_DICES = 6;
+    private static final int MAX_AMOUNT_OF_ROUNDS = 10;
+
+    public static int getMaxAmountOfRounds() {
+        return MAX_AMOUNT_OF_ROUNDS;
+    }
 
     private ArrayList<Dice> diceList;
-
     private ArrayList<RoundScore> roundScoresList;
     private Observer o;
     private boolean dicesRolled;
+    private ScoreCalculator sCalc;
 
     public void addObserver(Observer o){
         this.o = o;
     }
 
     public void notifyObserver(){
-        o.update(currentRound, rethrow, diceList);
+        o.update(currentRound, diceThrows, diceList);
     }
 
     public boolean isDicesRolled() {
@@ -35,8 +39,6 @@ public class GameLogic implements lassesjoblom.thirty.Observable {
     public void setDicesRolled(boolean dicesRolled) {
         this.dicesRolled = dicesRolled;
     }
-
-    private ScoreCalculator sCalc;
 
     public RoundScore getScore() {
         return sCalc.getCurrentRoundScore();
@@ -49,13 +51,14 @@ public class GameLogic implements lassesjoblom.thirty.Observable {
     public void setRoundScoresList(ArrayList<RoundScore> roundScores) {
         this.roundScoresList = roundScores;
     }
+
     public GameLogic() {
-        diceList = new ArrayList<>(6);
-        roundScoresList = new ArrayList<>(10);
+        diceList = new ArrayList<>(TOTAL_NUMBER_OF_DICES);
+        roundScoresList = new ArrayList<>(MAX_AMOUNT_OF_ROUNDS);
         sCalc = new ScoreCalculator();
         addDices();
-        currentRound = 1;
-        rethrow = 2;
+        updateRoundCounter();
+        diceThrows = MAX_NUMBER_OF_THROWS;
     }
 
     public void setDiceList(ArrayList<Dice> diceList) {
@@ -80,16 +83,16 @@ public class GameLogic implements lassesjoblom.thirty.Observable {
         this.currentRound = currentRound;
     }
 
-    public int getRethrow() {
-        return rethrow;
+    public int getDiceThrows() {
+        return diceThrows;
     }
 
-    public void setRethrow(int rethrow) {
-        this.rethrow = rethrow;
+    public void setDiceThrows(int diceThrows) {
+        this.diceThrows = diceThrows;
     }
 
     private void addDices() {
-        for(int i = 0; i != 6; i++){
+        for(int i = 0; i != TOTAL_NUMBER_OF_DICES; i++){
             Dice d = new Dice(i);
             diceList.add(d);
             sCalc.addDice(d);
@@ -101,52 +104,28 @@ public class GameLogic implements lassesjoblom.thirty.Observable {
     }
 
     public void playThrow( ){
-        if(rethrow != 0) {
-            rethrow--;
+        if(diceThrows != 0) {
+            diceThrows--;
             throwUnmarkedDices();
             notifyObserver();
         }
     }
 
+    public void unmarkDices(){
+        for(Dice d : diceList){
+            d.setMarked(false);
+        }
+    }
+
     public void endRound(String scoreRule) {
-        getRoundScore(scoreRule);
-        currentRound++;
-        rethrow = 2;
+        roundScoresList.add(sCalc.calculateScore(scoreRule));
+        updateRoundCounter();
+        diceThrows = MAX_NUMBER_OF_THROWS;
         notifyObserver();
     }
-    private void getRoundScore(String scoreRule) {
-        int pointValue = 0;
-        switch ( scoreRule ) {
-            case "4":
-                pointValue = 4;
-                break;
-            case "5":
-                pointValue = 5;
-                break;
-            case "6":
-                pointValue = 6;
-                break;
-            case "7":
-                pointValue = 7;
-                break;
-            case "8":
-                pointValue = 8;
-                break;
-            case "9":
-                pointValue = 9;
-                break;
-            case "10":
-                pointValue = 10;
-                break;
-            case "11":
-                pointValue = 11;
-                break;
-            case "12":
-                pointValue = 12;
-                break;
 
-        }
-        roundScoresList.add(sCalc.calculateScore(pointValue));
+    private void updateRoundCounter() {
+        currentRound = roundScoresList.size() + 1;
     }
 
     private boolean throwUnmarkedDices() {
