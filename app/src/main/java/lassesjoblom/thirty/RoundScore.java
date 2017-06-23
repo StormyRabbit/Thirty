@@ -50,7 +50,19 @@ public class RoundScore implements Parcelable {
         result = 31 * result + sixDiceScore;
         return result;
     }
-    public RoundScore(){}
+    public RoundScore() {
+        scoreRule = "";
+        round = 0;
+        totalScore = 0;
+        singleDiceScore = 0;
+        twoDiceScore = 0;
+        threeDiceScore = 0;
+        fourDiceScore = 0;
+        fiveDiceScore = 0;
+        sixDiceScore = 0;
+        lowScore = 0;
+
+    }
 
     public RoundScore(Parcel in){
         this.round = in.readInt();

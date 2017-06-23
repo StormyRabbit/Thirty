@@ -9,20 +9,15 @@ import java.util.Random;
  * Created by Lasse on 2017-06-08.
  */
 
-class Dice implements Parcelable, Comparable<Dice>{
+class Dice implements Parcelable, Comparable<Dice> {
     private int faceValue;
     private boolean isMarked;
     private int id;
 
-    @Override
-    public int compareTo(Dice otherDice) {
-        return this.faceValue - otherDice.getFaceValue();
-    }
 
     public Dice(int id){
         this.id = id;
         roll();
-
     }
 
     public Dice(Parcel in){
@@ -36,21 +31,14 @@ class Dice implements Parcelable, Comparable<Dice>{
     }
 
     @Override
-    public String toString() {
-        return "Dice{" +
-                "faceValue=" + faceValue +
-                ", isMarked=" + isMarked +
-                ", id=" + id +
-                '}';
+    public int compareTo(Dice otherDice) {
+        return this.faceValue - otherDice.getFaceValue();
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public boolean isMarked() {
         return isMarked;
@@ -70,10 +58,6 @@ class Dice implements Parcelable, Comparable<Dice>{
         return faceValue;
     }
 
-    public void setFaceValue(int faceValue) {
-        this.faceValue = faceValue;
-    }
-
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(faceValue);
         out.writeInt(id);
@@ -91,18 +75,13 @@ class Dice implements Parcelable, Comparable<Dice>{
 
         Dice dice = (Dice) o;
 
-        if (faceValue != dice.faceValue) return false;
-        if (isMarked != dice.isMarked) return false;
         return id == dice.id;
 
     }
 
     @Override
     public int hashCode() {
-        int result = faceValue;
-        result = 31 * result + (isMarked ? 1 : 0);
-        result = 31 * result + id;
-        return result;
+        return id;
     }
 
     public int describeContents() {
@@ -118,4 +97,15 @@ class Dice implements Parcelable, Comparable<Dice>{
             return new Dice[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "Dice{" +
+                "faceValue=" + faceValue +
+                ", isMarked=" + isMarked +
+                ", id=" + id +
+                '}';
+    }
+
+
 }

@@ -10,10 +10,12 @@ import java.util.ArrayList;
 
 public class ScoreboardActivity extends AppCompatActivity {
 
-
+    private TextView totalScoreLabel;
     private TextView[] scoreBoard;
-    private Button playAgainBut;
     private ArrayList<RoundScore> roundScoresList;
+    private int totalScore;
+
+
     public ScoreboardActivity() {}
 
     @Override
@@ -23,12 +25,19 @@ public class ScoreboardActivity extends AppCompatActivity {
         roundScoresList = getIntent().getParcelableArrayListExtra("scoreList");
         initiateScoreBoard();
         updateScoreBoard();
+        setupTotalScoreLabel();
+    }
+
+    private void setupTotalScoreLabel() {
+        totalScoreLabel = (TextView)findViewById(R.id.totalScoreLabel);
+        totalScoreLabel.setText(getText(R.string.finalScore) + " " +  String.valueOf(totalScore));
     }
 
     private void updateScoreBoard() {
         int i = 0;
-        for(RoundScore rs : roundScoresList){
+        for(RoundScore rs : roundScoresList) {
             scoreBoard[i].setText(buildScoreBoardString(i, rs));
+            totalScore += rs.getTotalScore();
             i++;
         }
     }
@@ -39,7 +48,7 @@ public class ScoreboardActivity extends AppCompatActivity {
         sb.append( System.getProperty ("line.separator") );
         sb.append( getText(R.string.scoreRuleText) + " " + rs.getScoreRule());
         sb.append( System.getProperty ("line.separator") );
-        if(rs.getScoreRule() != getText(R.string.dropdown_text_low)) {
+        if(!rs.getScoreRule().equals(getText(R.string.dropdown_text_low))) {
             sb.append( getText(R.string.oneDiceScore) + " " + String.valueOf(rs.getSingleDiceScore()));
             sb.append( System.getProperty ("line.separator") );
             sb.append( getText(R.string.twoDiceScore) + " " + String.valueOf(rs.getTwoDiceScore()));
@@ -56,7 +65,7 @@ public class ScoreboardActivity extends AppCompatActivity {
         return sb.toString();
     }
 
-    private String getScoreBoardString(int idx){
+    private String getScoreBoardString(int idx) {
         String retString = "";
         switch( idx ) {
             case 0:
