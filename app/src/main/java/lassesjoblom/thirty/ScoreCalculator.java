@@ -243,9 +243,10 @@ class ScoreCalculator {
     }
 
     /**
-     *
-     * @param dices
-     * @return
+     * Finds three dices that sums to the goal pointValue and removes them from the incoming
+     * {@link Dice} list.
+     * @param dices a sorted list of {@link Dice} objects.
+     * @return the incoming arrayList with all point giving combinations of three dices removed.
      */
     private ArrayList<Dice> calculateThreeDiceScore(ArrayList<Dice> dices) {
         for(int i = 0; i < dices.size() - 2; i++) {
@@ -296,6 +297,12 @@ class ScoreCalculator {
         return dOne.getFaceValue() + dTwo.getFaceValue() + dThree.getFaceValue() == pointValue;
     }
 
+    /**
+     * Finds 2 dice pairs that sums to the defined pointValue. Requires that the dice List is sorted
+     * by faceValue.
+     * @param dices ArrayList containing {@link Dice} objects. Must be sorted!
+     * @return the incoming dice list with all available pairs removed.
+     */
     private ArrayList<Dice> calculateTwoDiceScore(ArrayList<Dice> dices) {
         int i = 0;
         int j = dices.size() - 1;

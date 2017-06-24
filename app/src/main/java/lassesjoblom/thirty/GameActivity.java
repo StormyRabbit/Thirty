@@ -26,26 +26,6 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
     private TextView currentRoundView = null;
     private TextView numberOfRethrowsView = null;
 
-    public void update(int currentRound, int rethrow, ArrayList<Dice> diceList) {
-        if( currentRound == gl.getMaxAmountOfRounds() + 1 ) {
-            if( gl.getRoundScoresList() == null) {
-                Toast.makeText(this, R.string.noRoundsPlayedToast, Toast.LENGTH_SHORT).show();
-            }else {
-                endGame(gl.getRoundScoresList());
-            }
-        }else {
-            updateInfoRow(currentRound, rethrow);
-            updateBoard(diceList);
-        }
-
-    }
-
-    private void endGame(ArrayList<RoundScore> score) {
-        Intent endGameIntent = new Intent(GameActivity.this, ScoreboardActivity.class);
-        endGameIntent.putParcelableArrayListExtra("scoreList", score);
-        startActivity(endGameIntent);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +41,38 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
         }
     }
 
+    /**
+     * Part of observerpattern called when the model layer is changed. Updates the view.
+     * @param currentRound int value of the current game round.
+     * @param rethrow int value of the current amount of throws left.
+     * @param diceList List containing references to the {@link Dice} objects in play.
+     */
+    public void update(int currentRound, int rethrow, ArrayList<Dice> diceList) {
+        if( currentRound == gl.getMaxAmountOfRounds() + 1 ) {
+            if( gl.getRoundScoresList() == null) {
+                Toast.makeText(this, R.string.noRoundsPlayedToast, Toast.LENGTH_SHORT).show();
+            }else {
+                endGame(gl.getRoundScoresList());
+            }
+        }else {
+            updateInfoRow(currentRound, rethrow);
+            updateBoard(diceList);
+        }
+
+    }
+
+    /**
+     * Starts the process of ending the game, creates the {@link ScoreboardActivity} intent starts
+     * the next activity.
+     * @param score List containing all the {@link RoundScore} objects of the played game.
+     */
+    private void endGame(ArrayList<RoundScore> score) {
+        Intent endGameIntent = new Intent(GameActivity.this, ScoreboardActivity.class);
+        endGameIntent.putParcelableArrayListExtra("scoreList", score);
+        startActivity(endGameIntent);
+    }
+
+    
     private void restoreSavedState(Bundle savedInstanceState) {
         restoreDiceList(savedInstanceState);
         restoreModelIntegers(savedInstanceState);
@@ -139,6 +151,11 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
         };
     }
 
+    /**
+     * onClick method for the ImageView representing the dices. On click causes change in the
+     * {@link Dice#setMarked(boolean)} value.
+     * @param v the view associated with the activity
+     */
     public void diceOnClick(View v) {
         if(!gl.isDicesRolled())
             return;
@@ -188,6 +205,10 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
         ddItems.add(getString(R.string.dropdown_text_12));
     }
 
+    /**
+     * 
+     * @param v the view associated with the activity
+     */
     public void nextRoundButtonEvent(View v) {
         String s = popScoreRule();
         gl.endRound(s);
