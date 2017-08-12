@@ -3,12 +3,13 @@ package lassesjoblom.thirty;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -17,28 +18,37 @@ import static lassesjoblom.thirty.R.id.spinner;
 public class GameActivity extends AppCompatActivity implements lassesjoblom.thirty.Observer {
 
     private GameLogic gl;
-    private ImageView[] dices = null;
+    private ImageView[] dicesView = null;
+
 
     private ArrayList<String> ddItems;
     private Spinner dropdown;
     private ArrayAdapter<String> ddAdapter;
 
+    // textViews
     private TextView currentRoundView = null;
     private TextView numberOfRethrowsView = null;
+
+    // buttons
+    private Button throwButton = null;
+    private Button nextRoundButton = null;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        gl = new GameLogic();
-        gl.addObserver(this);
-        setupBaseState();
-        if(savedInstanceState != null){
+        setupInterfaceViews();
+        if(savedInstanceState != null) {
             restoreSavedState(savedInstanceState);
-        }else{
+        }else {
+            gl = new GameLogic();
+            setButtonState();
             addDropDownItems();
             initiateDDAdapter();
         }
+        gl.addObserver(this);
+        updateBoard(gl.getDices());
     }
 
     /**
@@ -48,36 +58,46 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
      * @param diceList List containing references to the {@link Dice} objects in play.
      */
     public void update(int currentRound, int rethrow, ArrayList<Dice> diceList) {
-        if( currentRound == gl.getMaxAmountOfRounds() + 1 ) {
-            if( gl.getRoundScoresList() == null) {
-                Toast.makeText(this, R.string.noRoundsPlayedToast, Toast.LENGTH_SHORT).show();
-            }else {
-                endGame(gl.getRoundScoresList());
-            }
-        }else {
-            updateInfoRow(currentRound, rethrow);
-            updateBoard(diceList);
-        }
+        if( currentRound == gl.MAX_AMOUNT_OF_ROUNDS + 1 ) {
+            if( gl.getRoundScoresList() != null)
+                endGame();
 
+        }else {
+            updateBoard(diceList);
+            updateInfoRow(currentRound, rethrow);
+
+        }
     }
 
     /**
      * Starts the process of ending the game, creates the {@link ScoreboardActivity} intent starts
      * the next activity.
-     * @param score List containing all the {@link RoundScore} objects of the played game.
      */
-    private void endGame(ArrayList<RoundScore> score) {
+    private void endGame() {
         Intent endGameIntent = new Intent(GameActivity.this, ScoreboardActivity.class);
-        endGameIntent.putParcelableArrayListExtra("scoreList", score);
+        endGameIntent.putParcelableArrayListExtra("scoreList", gl.getRoundScoresList());
         startActivity(endGameIntent);
     }
 
-    
+    private void setButtonState() {
+        nextRoundButton.setEnabled(false);
+    }
+
     private void restoreSavedState(Bundle savedInstanceState) {
-        restoreDiceList(savedInstanceState);
-        restoreModelIntegers(savedInstanceState);
-        restoreDiceList(savedInstanceState);
+        gl = savedInstanceState.getParcelable("gameLogic");
+        Log.i("restored diceList", gl.getDices().toString() );
         restoreScoreRuleList(savedInstanceState);
+        restoreInfoRow();
+        restoreButtonState(savedInstanceState);
+    }
+
+    private void restoreButtonState(Bundle savedInstanceState) {
+        nextRoundButton.setEnabled(savedInstanceState.getBoolean("nextRoundButtonState"));
+        throwButton.setEnabled(savedInstanceState.getBoolean("throwButtonState"));
+    }
+
+    private void restoreInfoRow() {
+        updateInfoRow(gl.getCurrentRound(), gl.getDiceThrows());
     }
 
     private void restoreScoreRuleList(Bundle savedInstanceState) {
@@ -85,39 +105,27 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
         initiateDDAdapter();
     }
 
-    private void restoreDiceList(Bundle savedInstanceState) {
-        ArrayList<Dice> dices = savedInstanceState.getParcelableArrayList("diceList");
-        gl.setDiceList(dices);
-    }
-
-    private void restoreModelIntegers(Bundle savedInstanceState) {
-        gl.setDiceThrows( savedInstanceState.getInt("currentRethrow") );
-        gl.setCurrentRound( savedInstanceState.getInt("currentRound") );
-        ArrayList<RoundScore> roundScore = savedInstanceState.getParcelableArrayList("roundScoreList");
-        gl.setRoundScoresList( roundScore );
-    }
-    private void setupBaseState() {
+    private void setupInterfaceViews() {
+        initiateButtons();
         initiateDices();
         initiateDropdown();
         initiateInfoRow();
-        setUnRolledDices();
-    }
 
-    private void setUnRolledDices() {
-        for(int i = 0; i < dices.length; i++) {
-            dices[i].setImageResource(R.drawable.unrolled);
-        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putParcelableArrayList("diceList", gl.getDices());
+        Log.i("save diceList", gl.getDices().toString() );
+        savedInstanceState.putParcelable("gameLogic", gl);
         savedInstanceState.putStringArrayList("scoreRules", ddItems);
-        savedInstanceState.putParcelableArrayList("roundScoreList", gl.getRoundScoresList());
-        savedInstanceState.putInt("currentRound", gl.getCurrentRound());
-        savedInstanceState.putInt("currentRethrow", gl.getDiceThrows());
+        savedInstanceState.putBoolean("throwButtonState", throwButton.isEnabled());
+        savedInstanceState.putBoolean("nextRoundButtonState", nextRoundButton.isEnabled());
+        super.onSaveInstanceState(savedInstanceState);
+    }
 
+    private void initiateButtons() {
+        throwButton = (Button)findViewById(R.id.throwButton);
+        nextRoundButton = (Button)findViewById(R.id.nextRoundButton);
     }
 
     private void initiateInfoRow() {
@@ -130,18 +138,8 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
         numberOfRethrowsView.setText(String.valueOf(rethrow));
     }
 
-    private void updateBoard(ArrayList<Dice> dices) {
-        if(!gl.isDicesRolled())
-            return;
-        int i = 0;
-        for(Dice d : dices) {
-            updateDiceView(i, d.getFaceValue(), d.isMarked());
-            i++;
-        }
-    }
-
     private void initiateDices() {
-        dices = new ImageView[] {
+        dicesView = new ImageView[] {
                 (ImageView) findViewById(R.id.dice_one),
                 (ImageView)findViewById(R.id.dice_two),
                 (ImageView)findViewById(R.id.dice_three),
@@ -152,7 +150,7 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
     }
 
     /**
-     * onClick method for the ImageView representing the dices. On click causes change in the
+     * onClick method for the ImageView representing the dicesView. On click causes change in the
      * {@link Dice#setMarked(boolean)} value.
      * @param v the view associated with the activity
      */
@@ -206,7 +204,9 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
     }
 
     /**
-     * 
+     * Event method for the next round button, responsible for poping the selected scorerule
+     * and ending the round starting the score calculation method chain inside of the {@link GameLogic}
+     * as well as restoring the game to a new round state.
      * @param v the view associated with the activity
      */
     public void nextRoundButtonEvent(View v) {
@@ -214,14 +214,22 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
         gl.endRound(s);
         gl.unmarkDices();
         gl.setDicesRolled(false);
-        setUnRolledDices();
-        Toast.makeText(this, R.string.newRoundToast, Toast.LENGTH_SHORT).show();
+        nextRoundButton.setEnabled(false);
+        throwButton.setEnabled(true);
     }
 
+    /**
+     * Event method for the the throw button.
+     * @param v view associated with the activity
+     */
     public void throwButtonEvent(View v) {
-        gl.setDicesRolled(true);
         if(gl.getDiceThrows() > 0){
             gl.playThrow();
+            gl.setDicesRolled(true);
+        }
+        if(gl.getDiceThrows() == 0) {
+            throwButton.setEnabled(false);
+            nextRoundButton.setEnabled(true);
         }
     }
 
@@ -237,13 +245,29 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
         ddAdapter.notifyDataSetChanged();
     }
 
-    private void updateDiceView(int idx, int faceValue, boolean isMarked) {
-        dices[idx].setImageResource(getDrawableID(faceValue, isMarked));
+    private void updateBoard(ArrayList<Dice> diceList) {
+        for(Dice d : diceList) {
+            updateDiceView(d.getId(), d.getFaceValue(), d.isMarked());
+        }
+    }
+
+    /**
+     * Responsible for updating the {@link ImageView} array containing the graphical representations
+     * of the dicesView. Uses {@link #getDrawableID} to determine what drawable resource to use.
+     * @param diceID value of the specific dice.
+     * @param faceValue the face value of targeted dice.
+     * @param isMarked boolean value determining if the dice should be grey (marked) or white (unmarked)
+     */
+    private void updateDiceView(int diceID, int faceValue, boolean isMarked) {
+        dicesView[diceID].setImageResource(getDrawableID(faceValue, isMarked));
     }
 
     private int getDrawableID(int faceValue, boolean isMarked) {
         int retValue;
         switch( faceValue ) {
+            case 0:
+                retValue = R.drawable.unrolled;
+                break;
             case 1:
                 retValue = isMarked ? R.drawable.grey1 : R.drawable.white1;
                 break;

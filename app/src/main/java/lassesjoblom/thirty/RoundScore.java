@@ -50,6 +50,7 @@ public class RoundScore implements Parcelable {
         result = 31 * result + sixDiceScore;
         return result;
     }
+
     public RoundScore() {
         scoreRule = "";
         round = 0;
@@ -61,11 +62,11 @@ public class RoundScore implements Parcelable {
         fiveDiceScore = 0;
         sixDiceScore = 0;
         lowScore = 0;
-
     }
 
     public RoundScore(Parcel in){
         this.round = in.readInt();
+        this.lowScore = in.readInt();
         this.totalScore = in.readInt();
         this.singleDiceScore = in.readInt();
         this.twoDiceScore = in.readInt();
@@ -78,6 +79,7 @@ public class RoundScore implements Parcelable {
     }
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(round);
+        out.writeInt(lowScore);
         out.writeInt(totalScore);
         out.writeInt(singleDiceScore);
         out.writeInt(twoDiceScore);
@@ -103,20 +105,17 @@ public class RoundScore implements Parcelable {
         }
     };
 
-    public int getRound() {
-        return round;
-    }
-
-    public void setRound(int round) {
-        this.round = round;
-    }
 
     public int getTotalScore() {
         return totalScore;
     }
 
     public void calculateTotalScore() {
-        totalScore = singleDiceScore + twoDiceScore + threeDiceScore + fourDiceScore + fiveDiceScore + sixDiceScore;
+        if(scoreRule.equals("Low")) {
+            totalScore = lowScore;
+        } else {
+            totalScore = singleDiceScore + twoDiceScore + threeDiceScore + fourDiceScore + fiveDiceScore + sixDiceScore;
+        }
     }
 
     public void addToLowScore(int score) {
@@ -180,14 +179,4 @@ public class RoundScore implements Parcelable {
         this.scoreRule = scoreRule;
     }
 
-    public void logScore() {
-        Log.d("CurrentRound", String.valueOf(round));
-        Log.d("SingleDice", String.valueOf(singleDiceScore));
-        Log.d("PairDice", String.valueOf(twoDiceScore));
-        Log.d("TripleDice", String.valueOf(threeDiceScore));
-        Log.d("FourDice", String.valueOf(fourDiceScore));
-        Log.d("FiveDice", String.valueOf(fiveDiceScore));
-        Log.d("SixDice", String.valueOf(sixDiceScore));
-        Log.d("totalScore", String.valueOf(totalScore));
-    }
 }

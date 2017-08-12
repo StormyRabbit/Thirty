@@ -2,6 +2,7 @@ package lassesjoblom.thirty;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.util.Random;
 
@@ -14,20 +15,14 @@ class Dice implements Parcelable, Comparable<Dice> {
     private boolean isMarked;
     private int id;
 
-
     public Dice(int id){
         this.id = id;
-        roll();
     }
 
-    public Dice(Parcel in){
+    private Dice(Parcel in){
         this.faceValue = in.readInt();
         this.id = in.readInt();
-        if(in.readInt() == 1){
-            this.isMarked = true;
-        }else{
-            this.isMarked = false;
-        }
+        this.isMarked = in.readByte() != 0;
     }
 
     @Override
@@ -39,7 +34,6 @@ class Dice implements Parcelable, Comparable<Dice> {
         return id;
     }
 
-
     public boolean isMarked() {
         return isMarked;
     }
@@ -47,7 +41,6 @@ class Dice implements Parcelable, Comparable<Dice> {
     public void setMarked(boolean marked) {
         isMarked = marked;
     }
-
 
     public void roll() {
         Random rng = new Random();
@@ -58,25 +51,23 @@ class Dice implements Parcelable, Comparable<Dice> {
         return faceValue;
     }
 
+    public void resetDice() {
+        faceValue = 0;
+    }
+
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(faceValue);
         out.writeInt(id);
-        if(isMarked){
-            out.writeInt(1);
-        }else{
-            out.writeInt(0);
-        }
+        out.writeByte((byte) (isMarked ? 1 : 0));
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Dice dice = (Dice) o;
 
         return id == dice.id;
-
     }
 
     @Override
@@ -89,6 +80,7 @@ class Dice implements Parcelable, Comparable<Dice> {
     }
 
     public static final Parcelable.Creator<Dice> CREATOR = new Parcelable.Creator<Dice>() {
+
         public Dice createFromParcel(Parcel in) {
             return new Dice(in);
         }
@@ -106,6 +98,4 @@ class Dice implements Parcelable, Comparable<Dice> {
                 ", id=" + id +
                 '}';
     }
-
-
 }

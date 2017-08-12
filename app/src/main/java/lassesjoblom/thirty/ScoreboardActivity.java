@@ -1,7 +1,9 @@
 package lassesjoblom.thirty;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -118,5 +120,26 @@ public class ScoreboardActivity extends AppCompatActivity {
                 (TextView)findViewById(R.id.r9ScoreLabel),
                 (TextView)findViewById(R.id.r10ScoreLabel)
         };
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            event.startTracking();
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if ( keyCode == KeyEvent.KEYCODE_BACK && event.isTracking() && !event.isCanceled()) {
+            Intent startNewGameIntent = new Intent(ScoreboardActivity.this, GameActivity.class);
+            startActivity(startNewGameIntent);
+            finish();
+            return true;
+        }
+
+        return super.onKeyUp(keyCode, event);
     }
 }

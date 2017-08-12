@@ -1,35 +1,47 @@
 package lassesjoblom.thirty;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
  * Created by Lasse on 2017-06-08.
  */
 
-public class GameLogic implements lassesjoblom.thirty.Observable {
+public class GameLogic implements lassesjoblom.thirty.Observable, Parcelable {
 
     private int currentRound;
     private int diceThrows;
-    private static final int MAX_NUMBER_OF_THROWS = 3;
-    private static final int TOTAL_NUMBER_OF_DICES = 6;
-    private static final int MAX_AMOUNT_OF_ROUNDS = 10;
 
-    public static int getMaxAmountOfRounds() {
-        return MAX_AMOUNT_OF_ROUNDS;
-    }
+    public static final int MAX_NUMBER_OF_THROWS = 3;
+    public static final int TOTAL_NUMBER_OF_DICES = 6;
+    public static final int MAX_AMOUNT_OF_ROUNDS = 10;
 
     private ArrayList<Dice> diceList;
     private ArrayList<RoundScore> roundScoresList;
-    private Observer o;
+    private Observer gameActivityObserver;
     private boolean dicesRolled;
     private ScoreCalculator sCalc;
 
+    public GameLogic() {
+        diceList = new ArrayList<>(TOTAL_NUMBER_OF_DICES);
+        roundScoresList = new ArrayList<>(MAX_AMOUNT_OF_ROUNDS);
+        sCalc = new ScoreCalculator();
+        createDices();
+
+        updateRoundCounter();
+        diceThrows = MAX_NUMBER_OF_THROWS;
+    }
+
     public void addObserver(Observer o){
-        this.o = o;
+        this.gameActivityObserver = o;
     }
 
     public void notifyObserver(){
-        o.update(currentRound, diceThrows, diceList);
+        Log.d("notifyObserver", diceList.toString());
+        gameActivityObserver.update(currentRound, diceThrows, diceList);
     }
 
     public boolean isDicesRolled() {
@@ -40,70 +52,53 @@ public class GameLogic implements lassesjoblom.thirty.Observable {
         this.dicesRolled = dicesRolled;
     }
 
-    public RoundScore getScore() {
-        return sCalc.getCurrentRoundScore();
-    }
-
     public ArrayList<RoundScore> getRoundScoresList() {
         return roundScoresList;
     }
 
-    public void setRoundScoresList(ArrayList<RoundScore> roundScores) {
-        this.roundScoresList = roundScores;
-    }
-
-    public GameLogic() {
-        diceList = new ArrayList<>(TOTAL_NUMBER_OF_DICES);
-        roundScoresList = new ArrayList<>(MAX_AMOUNT_OF_ROUNDS);
-        sCalc = new ScoreCalculator();
-        addDices();
-        updateRoundCounter();
-        diceThrows = MAX_NUMBER_OF_THROWS;
-    }
-
-    public void setDiceList(ArrayList<Dice> diceList) {
-        this.diceList = diceList;
-    }
-
     public Dice setDiceMarker(int idx) {
-        Dice d = diceList.get(idx);
-        if(d.isMarked()) {
-            d.setMarked(false);
-        }else {
-            d.setMarked(true);
+        for(Dice d : diceList){
+            if(d.getId() == idx){
+                if(d.isMarked()) {
+                    d.setMarked(false);
+                }else {
+                    d.setMarked(true);
+                }
+                return d;
+            }
+
         }
-        return d;
+        return null;
     }
 
     public int getCurrentRound() {
         return currentRound;
     }
 
-    public void setCurrentRound(int currentRound) {
-        this.currentRound = currentRound;
-    }
-
     public int getDiceThrows() {
         return diceThrows;
     }
 
-    public void setDiceThrows(int diceThrows) {
-        this.diceThrows = diceThrows;
-    }
+    private void createDices() {
 
-    private void addDices() {
         for(int i = 0; i != TOTAL_NUMBER_OF_DICES; i++){
             Dice d = new Dice(i);
+            d.resetDice();
+            Log.d("creating dice #", String.valueOf(i));
             diceList.add(d);
             sCalc.addDice(d);
         }
     }
-
+    public void resetDices() {
+        for(Dice d : diceList) {
+            d.resetDice();
+        }
+    }
     public ArrayList<Dice> getDices() {
         return diceList;
     }
 
-    public void playThrow( ){
+    public void playThrow() {
         if(diceThrows != 0) {
             diceThrows--;
             throwUnmarkedDices();
@@ -111,14 +106,14 @@ public class GameLogic implements lassesjoblom.thirty.Observable {
         }
     }
 
-    public void unmarkDices(){
+    public void unmarkDices() {
         for(Dice d : diceList){
             d.setMarked(false);
         }
     }
 
     public void endRound(String scoreRule) {
-        roundScoresList.add(sCalc.calculateScore(scoreRule));
+        roundScoresList.add(sCalc.calculateScore(scoreRule, diceList));
         updateRoundCounter();
         diceThrows = MAX_NUMBER_OF_THROWS;
         notifyObserver();
@@ -130,13 +125,43 @@ public class GameLogic implements lassesjoblom.thirty.Observable {
 
     private boolean throwUnmarkedDices() {
         boolean diceThrown = false;
-        for(Dice d : diceList){
-            if(!d.isMarked()){
+        for(Dice d : diceList) {
+            if(!d.isMarked()) {
                 d.roll();
                 diceThrown = true;
             }
         }
+        Log.d("dices:", diceList.toString());
         return diceThrown;
     }
 
+    /* Parcelable interface implementation */
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(currentRound);
+        out.writeInt(diceThrows);
+        out.writeTypedList(diceList);
+        out.writeTypedList(roundScoresList);
+    }
+
+    public static final Parcelable.Creator<GameLogic> CREATOR
+            = new Parcelable.Creator<GameLogic>() {
+        public GameLogic createFromParcel(Parcel in) {
+            return new GameLogic(in);
+        }
+
+        public GameLogic[] newArray(int size) {
+            return new GameLogic[size];
+        }
+    };
+
+    private GameLogic(Parcel in) {
+        currentRound = in.readInt();
+        diceThrows = in.readInt();
+        in.readTypedList(diceList, Dice.CREATOR);
+        in.readTypedList(roundScoresList, RoundScore.CREATOR );
+    }
 }
