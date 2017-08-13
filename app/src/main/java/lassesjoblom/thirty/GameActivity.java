@@ -3,7 +3,6 @@ package lassesjoblom.thirty;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -39,9 +38,9 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupInterfaceViews();
-        if(savedInstanceState != null) {
+        if(savedInstanceState != null) { // om aktiviteten inte är 'färsk'
             restoreSavedState(savedInstanceState);
-        }else {
+        }else { // infaller när aktiviteten anses som färsk.
             gl = new GameLogic();
             setButtonState();
             addDropDownItems();
@@ -59,10 +58,12 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
      */
     public void update(int currentRound, int rethrow, ArrayList<Dice> diceList) {
         if( currentRound == gl.MAX_AMOUNT_OF_ROUNDS + 1 ) {
+            // om sista rundan är spelad avsluta spelet
             if( gl.getRoundScoresList() != null)
                 endGame();
 
         }else {
+            // annars updatera tärningsvyn med de nya resultatet och updatera informationselementen
             updateBoard(diceList);
             updateInfoRow(currentRound, rethrow);
 
@@ -84,8 +85,8 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
     }
 
     private void restoreSavedState(Bundle savedInstanceState) {
+        // återställer applikationens tillstånd steg för steg
         gl = savedInstanceState.getParcelable("gameLogic");
-        Log.i("restored diceList", gl.getDices().toString() );
         restoreScoreRuleList(savedInstanceState);
         restoreInfoRow();
         restoreButtonState(savedInstanceState);
@@ -115,7 +116,7 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        Log.i("save diceList", gl.getDices().toString() );
+        // sparar undan alla tillstånd när en konfigurationsförändring sker.
         savedInstanceState.putParcelable("gameLogic", gl);
         savedInstanceState.putStringArrayList("scoreRules", ddItems);
         savedInstanceState.putBoolean("throwButtonState", throwButton.isEnabled());
@@ -155,6 +156,11 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
      * @param v the view associated with the activity
      */
     public void diceOnClick(View v) {
+        /*
+            Aktiveras när användaren touchar en av de grafiska tärningar
+            som visas för användaren i vyn. Den plats som tärningen ligger på i denna klass imageView
+             array korrelerar med det diceID som bearbetas i modellen.
+         */
         if(!gl.isDicesRolled())
             return;
         Dice d = null;
@@ -178,6 +184,7 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
                 d = gl.setDiceMarker(5);
                 break;
         }
+        // updatera berörd tärning till den nya bilden
         updateDiceView(d.getId(), d.getFaceValue(), d.isMarked());
     }
 
@@ -223,17 +230,22 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
      * @param v view associated with the activity
      */
     public void throwButtonEvent(View v) {
-        if(gl.getDiceThrows() > 0){
+        if(gl.getDiceThrows() > 0){ // om det finns kast kvar på rundan, spela en runda
             gl.playThrow();
             gl.setDicesRolled(true);
         }
-        if(gl.getDiceThrows() == 0) {
+        if(gl.getDiceThrows() == 0) { // om det inte finns några kast kvar, toggla knapparna
             throwButton.setEnabled(false);
             nextRoundButton.setEnabled(true);
         }
     }
 
     private String popScoreRule() {
+        /*
+        Aktiveras när en runda är färdig och sparar ner den vid tillfället markerade poängregeln.
+        Anropar sedan metod för att ta bort regeln från dropdown listan för att sedan returnera
+        string värdet.
+         */
         Object ddObj = dropdown.getSelectedItem();
         String SelectedScoreRule = (String)ddObj;
         removeScoreRuleFromDropDown(SelectedScoreRule);
@@ -241,6 +253,7 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
     }
 
     private void removeScoreRuleFromDropDown(String SelectedScoreRule){
+        // tar bort param värdet från dropdown menyn och updaterar sedan elementet
         ddAdapter.remove(SelectedScoreRule);
         ddAdapter.notifyDataSetChanged();
     }
@@ -259,10 +272,12 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
      * @param isMarked boolean value determining if the dice should be grey (marked) or white (unmarked)
      */
     private void updateDiceView(int diceID, int faceValue, boolean isMarked) {
+        // sätter image resource för den aktuella tärningens värden
         dicesView[diceID].setImageResource(getDrawableID(faceValue, isMarked));
     }
 
     private int getDrawableID(int faceValue, boolean isMarked) {
+        // returnerar R.drawable id för begärd image resource.
         int retValue;
         switch( faceValue ) {
             case 0:

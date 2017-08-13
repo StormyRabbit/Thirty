@@ -19,11 +19,7 @@ class Dice implements Parcelable, Comparable<Dice> {
         this.id = id;
     }
 
-    private Dice(Parcel in){
-        this.faceValue = in.readInt();
-        this.id = in.readInt();
-        this.isMarked = in.readByte() != 0;
-    }
+
 
     @Override
     public int compareTo(Dice otherDice) {
@@ -55,12 +51,6 @@ class Dice implements Parcelable, Comparable<Dice> {
         faceValue = 0;
     }
 
-    public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(faceValue);
-        out.writeInt(id);
-        out.writeByte((byte) (isMarked ? 1 : 0));
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -74,6 +64,17 @@ class Dice implements Parcelable, Comparable<Dice> {
     public int hashCode() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return "Dice{" +
+                "faceValue=" + faceValue +
+                ", isMarked=" + isMarked +
+                ", id=" + id +
+                '}';
+    }
+
+    /* parcelable implementation */
 
     public int describeContents() {
         return 0;
@@ -90,12 +91,16 @@ class Dice implements Parcelable, Comparable<Dice> {
         }
     };
 
-    @Override
-    public String toString() {
-        return "Dice{" +
-                "faceValue=" + faceValue +
-                ", isMarked=" + isMarked +
-                ", id=" + id +
-                '}';
+    private Dice(Parcel in){
+        this.faceValue = in.readInt();
+        this.id = in.readInt();
+        this.isMarked = in.readByte() != 0;
     }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(faceValue);
+        out.writeInt(id);
+        out.writeByte((byte) (isMarked ? 1 : 0));
+    }
+
 }

@@ -27,15 +27,13 @@ class ScoreCalculator {
         diceList.add(d);
     }
 
-    public RoundScore getCurrentRoundScore(){
-        return currentRoundScore;
-    }
-
     /**
      * Converts the user selected score rule to an integer pointValue used in score calculations
      * @param scoreRule The selected scoreRule sent from {@link #calculateScore(String, ArrayList<Dice>)}
      */
     private void scoreRuleToPointValue(String scoreRule) {
+        // konverterar string värdet från användarens valda alternativ till integer som används
+        // för att beräkna poäng.
         pointValue = 0;
         switch (scoreRule) {
             case "Low":
@@ -77,15 +75,13 @@ class ScoreCalculator {
      * @return An {@link RoundScore} instance containing the result of the score calculation
      */
     public RoundScore calculateScore(String scoreRule, ArrayList<Dice> diceList) {
-        this.diceList = new ArrayList<>(diceList);
-        currentRoundScore = new RoundScore();
-        currentRoundScore.setScoreRule(scoreRule);
-        scoreRuleToPointValue(scoreRule);
-        if(pointValue == 0) {
+        prepareScoreCalculations(scoreRule, diceList); // initierar alla nödvändiga värden och objekt.
+
+        if(pointValue == 0) { // om Low används som poängräkning
             calculateLowScore();
 
         }else {
-
+            // sortering som behövs för vissa av poängräkningsalgoritmerna
             Collections.sort(this.diceList);
             calculateSingleDiceScore();
             removeTooHighRolls();
@@ -119,7 +115,17 @@ class ScoreCalculator {
         }
     }
 
+    private void prepareScoreCalculations(String scoreRule, ArrayList<Dice> diceList) {
+        this.diceList = new ArrayList<>(diceList);
+        currentRoundScore = new RoundScore();
+        currentRoundScore.setScoreRule(scoreRule);
+        scoreRuleToPointValue(scoreRule);
+    }
+
     private void removeTooHighRolls() {
+        /*
+        Tar bort alla singel tärningar som överstiger det poängvärde definerat av vald regel
+         */
         Iterator iter = diceList.iterator();
         while(iter.hasNext()) {
             Dice d = (Dice)iter.next();
@@ -157,10 +163,8 @@ class ScoreCalculator {
     }
 
     private void calculateSixDiceScore() {
-        int result = sumArr(diceList);
-        if(result == pointValue) {
+        if(sumArr(diceList) == pointValue)
             currentRoundScore.addToSixDiceScore(pointValue);
-        }
     }
 
     /**
@@ -211,17 +215,26 @@ class ScoreCalculator {
     }
 
     private void calculateFourOrFiveScore(int numberOfDices) {
+        // generera alla möjliga kombinationer av param antal tärningar.
         ArrayList<Set<Dice>> tempDices = getSubsets(diceList, numberOfDices);
 
-        while(!tempDices.isEmpty()) {
+        while(!tempDices.isEmpty()) { // så länge det finns en möjlig kombination
             Set<Dice> diceSet = tempDices.remove(0);
             int sum = 0;
             for(Dice d : diceSet) {
                 sum += d.getFaceValue();
             }
 
+            // om det ovan uthämtade settet summerar till poängvärdet
+            // addera summan till currentRoundScore objektet
             if(sum == pointValue) {
-                currentRoundScore.addToFiveDiceScore(pointValue);
+                if(numberOfDices == 4){
+                    currentRoundScore.addToFourDiceScore(pointValue);
+                }else{
+                    currentRoundScore.addToFiveDiceScore(pointValue);
+                }
+                // eftersom det bara kan finnas ett relevant set av 4 / 5 tärningar så avslutas
+                // algoritmen efter första hittade.
                 diceList.removeAll(diceSet);
                 break;
             }
@@ -240,16 +253,21 @@ class ScoreCalculator {
                 Dice dicei = diceList.get(i);
                 Dice dicej = diceList.get(j);
                 Dice dicek = diceList.get(k);
-                if (evaluateFaceValue(dicei, dicej, dicek)) { // combination found
+                if (evaluateFaceValue(dicei, dicej, dicek)) {
+                    // en värdig kombination hittad
+                    // lägg till poängen och ta bort de tärningar som användes
                     currentRoundScore.addToThreeDiceScore(pointValue);
                     diceList.remove(dicei);
                     diceList.remove(dicej);
                     diceList.remove(dicek);
                     break;
                 }else{
+                    // avgör om k eller j pekaren ska flytta på sig
                     if(evaluateArrayPointers(dicei, dicej, dicek)) {
+                        // om summan är högre än målet
                         k--;
                     }else {
+                        // om summan är lägre än målet
                         j++;
                     }
                 }
@@ -291,7 +309,9 @@ class ScoreCalculator {
             Dice d2 = diceList.get(j);
             int x = d1.getFaceValue();
             int y = d2.getFaceValue();
-            if( x + y == pointValue) { // combination found
+            if( x + y == pointValue) {
+                // kombination hittad, ta bort berörda tärningar och addera poäng till roundscore
+                // objektet.
                 diceList.remove(d1);
                 diceList.remove(d2);
                 i = 0;
@@ -299,10 +319,10 @@ class ScoreCalculator {
                 currentRoundScore.addToTwoDiceScore(pointValue);
             }
             if(x + y >= pointValue)
-                j--;
+                j--; // om summan är för hög gå ner med den 'höga' pekaren
 
             if(x + y <= pointValue)
-                i++;
+                i++; // om summan är för låg gå upp med den 'låga' pekaren
         }
     }
 }

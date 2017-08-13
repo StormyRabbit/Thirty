@@ -40,7 +40,7 @@ public class GameLogic implements lassesjoblom.thirty.Observable, Parcelable {
     }
 
     public void notifyObserver(){
-        Log.d("notifyObserver", diceList.toString());
+        // berättar för GameActivity att det är dags att updatera vy elementen
         gameActivityObserver.update(currentRound, diceThrows, diceList);
     }
 
@@ -57,13 +57,11 @@ public class GameLogic implements lassesjoblom.thirty.Observable, Parcelable {
     }
 
     public Dice setDiceMarker(int idx) {
+        // skiftar tärningen med samma id som param värdets status som markerad.
+        // används för att hålla koll på vilken tärning som inte ska rullas.
         for(Dice d : diceList){
             if(d.getId() == idx){
-                if(d.isMarked()) {
-                    d.setMarked(false);
-                }else {
-                    d.setMarked(true);
-                }
+                d.setMarked( !d.isMarked() );
                 return d;
             }
 
@@ -72,34 +70,35 @@ public class GameLogic implements lassesjoblom.thirty.Observable, Parcelable {
     }
 
     public int getCurrentRound() {
+        // returnerar vilket aktuell runda som spelas.
         return currentRound;
     }
 
     public int getDiceThrows() {
+        // returnerar antal kvarvarande kast på den aktuella rundan
         return diceThrows;
     }
 
     private void createDices() {
-
+        // skapar och nollställer alla tärningar. Sparar de även i denna klass tärnings lista.
+        // skapar även dessa tärningar i scoreCalculator klassen.
         for(int i = 0; i != TOTAL_NUMBER_OF_DICES; i++){
             Dice d = new Dice(i);
             d.resetDice();
-            Log.d("creating dice #", String.valueOf(i));
             diceList.add(d);
             sCalc.addDice(d);
         }
     }
-    public void resetDices() {
-        for(Dice d : diceList) {
-            d.resetDice();
-        }
-    }
+
     public ArrayList<Dice> getDices() {
+        // returnerar listan över alla tärningar
         return diceList;
     }
 
     public void playThrow() {
-        if(diceThrows != 0) {
+        // spelar själva rundan, reducerar antal tillgängliga kast, kastar alla omarkerade
+        // tärningar samt pushar den nya informationen till observatörerna.
+        if(diceThrows != 0) { // om det finns kast kvar på rundan
             diceThrows--;
             throwUnmarkedDices();
             notifyObserver();
@@ -107,12 +106,18 @@ public class GameLogic implements lassesjoblom.thirty.Observable, Parcelable {
     }
 
     public void unmarkDices() {
+        // nollställer markerings statusen för alla tärningar.
         for(Dice d : diceList){
             d.setMarked(false);
         }
     }
 
     public void endRound(String scoreRule) {
+        // avslutar en runda, tar ett specifik poängregel som param.
+        // Skapar ett nytt objekt av typen roundScore via Scorecalculatorn och adderar det
+        // returnerade objektet till en lista med poängen för alla rundor.
+        // updaterar även modellvärdena relaterat för vilken runda som spelas och antalet tillgängliga
+        // kast. Slutligen så pushas även en notis om en förändring till observatörerna.
         roundScoresList.add(sCalc.calculateScore(scoreRule, diceList));
         updateRoundCounter();
         diceThrows = MAX_NUMBER_OF_THROWS;
@@ -126,12 +131,13 @@ public class GameLogic implements lassesjoblom.thirty.Observable, Parcelable {
     private boolean throwUnmarkedDices() {
         boolean diceThrown = false;
         for(Dice d : diceList) {
-            if(!d.isMarked()) {
+            if(!d.isMarked()) { // om tärningen inte är markerad rulla tärningen
                 d.roll();
                 diceThrown = true;
             }
         }
-        Log.d("dices:", diceList.toString());
+        // retur värdet används sedan för att avgöra om man ska hoppa över de
+        // kvarvarande kasten på en runda.
         return diceThrown;
     }
 

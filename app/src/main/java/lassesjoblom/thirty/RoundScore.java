@@ -64,48 +64,6 @@ public class RoundScore implements Parcelable {
         lowScore = 0;
     }
 
-    public RoundScore(Parcel in){
-        this.round = in.readInt();
-        this.lowScore = in.readInt();
-        this.totalScore = in.readInt();
-        this.singleDiceScore = in.readInt();
-        this.twoDiceScore = in.readInt();
-        this.threeDiceScore = in.readInt();
-        this.fourDiceScore = in.readInt();
-        this.fiveDiceScore = in.readInt();
-        this.sixDiceScore = in.readInt();
-        this.scoreRule = in.readString();
-
-    }
-    public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(round);
-        out.writeInt(lowScore);
-        out.writeInt(totalScore);
-        out.writeInt(singleDiceScore);
-        out.writeInt(twoDiceScore);
-        out.writeInt(threeDiceScore);
-        out.writeInt(fourDiceScore);
-        out.writeInt(fiveDiceScore);
-        out.writeInt(sixDiceScore);
-        out.writeString(scoreRule);
-
-    }
-
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Parcelable.Creator<RoundScore> CREATOR = new Parcelable.Creator<RoundScore>() {
-        public RoundScore createFromParcel(Parcel in) {
-            return new RoundScore(in);
-        }
-
-        public RoundScore[] newArray(int size) {
-            return new RoundScore[size];
-        }
-    };
-
-
     public int getTotalScore() {
         return totalScore;
     }
@@ -114,10 +72,16 @@ public class RoundScore implements Parcelable {
         if(scoreRule.equals("Low")) {
             totalScore = lowScore;
         } else {
-            totalScore = singleDiceScore + twoDiceScore + threeDiceScore + fourDiceScore + fiveDiceScore + sixDiceScore;
+            totalScore = singleDiceScore + twoDiceScore
+                    + threeDiceScore + fourDiceScore
+                    + fiveDiceScore + sixDiceScore;
         }
     }
 
+    /*
+    Följande metoder används av GameLogic för att addera till roundScore objektets olika
+    poängräknande fält.
+     */
     public void addToLowScore(int score) {
         this.lowScore += score;
     }
@@ -146,6 +110,8 @@ public class RoundScore implements Parcelable {
         sixDiceScore += score;
     }
 
+
+    // metoder för att läsa från de fält som representerar de olika poängvärdena
     public int getSingleDiceScore() {
         return singleDiceScore;
     }
@@ -175,8 +141,52 @@ public class RoundScore implements Parcelable {
         return scoreRule;
     }
 
+
     public void setScoreRule(String scoreRule) {
+        // bestämmer vad för summa som ska
         this.scoreRule = scoreRule;
     }
 
+    /* Parcelable interface implementation */
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Parcelable.Creator<RoundScore> CREATOR = new Parcelable.Creator<RoundScore>() {
+        public RoundScore createFromParcel(Parcel in) {
+            return new RoundScore(in);
+        }
+
+        public RoundScore[] newArray(int size) {
+            return new RoundScore[size];
+        }
+    };
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(round);
+        out.writeInt(lowScore);
+        out.writeInt(totalScore);
+        out.writeInt(singleDiceScore);
+        out.writeInt(twoDiceScore);
+        out.writeInt(threeDiceScore);
+        out.writeInt(fourDiceScore);
+        out.writeInt(fiveDiceScore);
+        out.writeInt(sixDiceScore);
+        out.writeString(scoreRule);
+
+    }
+
+    public RoundScore(Parcel in){
+        this.round = in.readInt();
+        this.lowScore = in.readInt();
+        this.totalScore = in.readInt();
+        this.singleDiceScore = in.readInt();
+        this.twoDiceScore = in.readInt();
+        this.threeDiceScore = in.readInt();
+        this.fourDiceScore = in.readInt();
+        this.fiveDiceScore = in.readInt();
+        this.sixDiceScore = in.readInt();
+        this.scoreRule = in.readString();
+
+    }
 }
