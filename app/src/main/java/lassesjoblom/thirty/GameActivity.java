@@ -220,6 +220,7 @@ public class GameActivity extends AppCompatActivity implements lassesjoblom.thir
         String s = popScoreRule();
         gl.endRound(s);
         gl.unmarkDices();
+        gl.resetDices();
         gl.setDicesRolled(false);
         nextRoundButton.setEnabled(false);
         throwButton.setEnabled(true);

@@ -1,8 +1,5 @@
 package lassesjoblom.thirty;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -207,14 +204,14 @@ class ScoreCalculator {
      * equals to the defined pointValue.
      */
     private void calculateFourDiceScore() {
-        calculateFourOrFiveScore(4);
+        calculateBruteForce(4);
     }
 
     private void calculateFiveDiceScore() {
-        calculateFourOrFiveScore(5);
+        calculateBruteForce(5);
     }
 
-    private void calculateFourOrFiveScore(int numberOfDices) {
+    private void calculateBruteForce(int numberOfDices) {
         // generera alla möjliga kombinationer av param antal tärningar.
         ArrayList<Set<Dice>> tempDices = getSubsets(diceList, numberOfDices);
 
@@ -256,11 +253,14 @@ class ScoreCalculator {
                 if (evaluateFaceValue(dicei, dicej, dicek)) {
                     // en värdig kombination hittad
                     // lägg till poängen och ta bort de tärningar som användes
-                    currentRoundScore.addToThreeDiceScore(pointValue);
                     diceList.remove(dicei);
                     diceList.remove(dicej);
                     diceList.remove(dicek);
-                    break;
+                    currentRoundScore.addToThreeDiceScore(pointValue);
+                    // återställ pekare
+                    i = 0;
+                    j = i+1;
+                    k = diceList.size() - 1;
                 }else{
                     // avgör om k eller j pekaren ska flytta på sig
                     if(evaluateArrayPointers(dicei, dicej, dicek)) {
@@ -317,11 +317,12 @@ class ScoreCalculator {
                 i = 0;
                 j = diceList.size() - 1;
                 currentRoundScore.addToTwoDiceScore(pointValue);
+
             }
-            if(x + y >= pointValue)
+            if(x + y > pointValue)
                 j--; // om summan är för hög gå ner med den 'höga' pekaren
 
-            if(x + y <= pointValue)
+            if(x + y < pointValue)
                 i++; // om summan är för låg gå upp med den 'låga' pekaren
         }
     }

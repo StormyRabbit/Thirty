@@ -110,6 +110,14 @@ public class GameLogic implements lassesjoblom.thirty.Observable, Parcelable {
         for(Dice d : diceList){
             d.setMarked(false);
         }
+        notifyObserver();
+    }
+
+    public void resetDices() {
+        for(Dice d : diceList) {
+            d.resetDice();
+        }
+        notifyObserver();
     }
 
     public void endRound(String scoreRule) {
